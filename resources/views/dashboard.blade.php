@@ -124,7 +124,7 @@
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 px-0 sidebar">
                 <div class="brand-name">
-                    <i class="bi bi-building"></i> BHBS
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 40px; width: 40px; border-radius: 50%; object-fit: cover;">
                 </div>
                 
                 <div class="user-info">

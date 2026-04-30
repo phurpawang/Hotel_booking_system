@@ -25,6 +25,18 @@
         </div>
     </header>
 
+    <!-- Reusable Search Bar -->
+    @include('components.search-bar', [
+        'dzongkhags' => \App\Models\Dzongkhag::all(),
+        'sticky' => true,
+        'check_in' => request('check_in'),
+        'check_out' => request('check_out'),
+        'adults' => request('adults', 1),
+        'children' => request('children', 0),
+        'rooms' => request('rooms', 1),
+        'dzongkhag_id' => request('dzongkhag_id')
+    ])
+
     <div class="container mx-auto px-4 py-8">
         @if(session('success'))
         <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
@@ -172,6 +184,54 @@
                     </div>
 
                     <!-- Actions -->
+                    <!-- Review Section -->
+                    @php
+                        $checkOutDate = \Carbon\Carbon::parse($booking->check_out_date);
+                        $isAfterCheckOut = \Carbon\Carbon::now()->greaterThanOrEqualTo($checkOutDate);
+                        $isCompleted = $booking->status === 'COMPLETED' || $booking->status === 'CHECKED_OUT';
+                        $existingReview = $booking->review()->first();
+                        $canReview = ($isCompleted || $isAfterCheckOut) && !$existingReview;
+                    @endphp
+
+                    @if($existingReview)
+                    <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-green-800 mb-2">
+                            <i class="fas fa-check-circle mr-2"></i> Review Submitted
+                        </h3>
+                        <p class="text-sm text-green-700">
+                            Thank you for your review! Your feedback helps us improve our services.
+                        </p>
+                        <a href="#"onclick="alert('Review submitted on ' + '{{ $existingReview->review_date->format('M d, Y') }}')" class="text-sm text-green-600 hover:text-green-800 mt-2 inline-block">
+                            View Your Review <i class="fas fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                    @elseif($canReview)
+                    <div class="bg-white rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-star text-yellow-500 mr-2"></i> Share Your Experience
+                        </h3>
+                        <p class="text-gray-600 text-sm mb-4">Your feedback helps the hotel improve and helps other guests make informed decisions.</p>
+                        <a href="{{ route('guest.review.form', [
+                            'booking_id' => $booking->booking_id,
+                            'identifier' => $validated['identifier'] ?? $booking->guest_email
+                        ]) }}" class="w-full bg-yellow-500 text-white px-6 py-3 rounded-lg hover:bg-yellow-600 transition font-semibold inline-block text-center">
+                            <i class="fas fa-pen-fancy mr-2"></i> Write Review
+                        </a>
+                    </div>
+                    @else
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6">
+                        <h3 class="text-lg font-bold text-gray-700 mb-2">
+                            <i class="fas fa-clock mr-2"></i> Can't Review Yet
+                        </h3>
+                        <p class="text-sm text-gray-600">
+                            You can write a review after your check-out date.
+                        </p>
+                        <p class="text-sm text-gray-500 mt-2">
+                            Check-out: <strong>{{ $booking->check_out_date->format('M d, Y') }}</strong>
+                        </p>
+                    </div>
+                    @endif
+
                     @if($booking->status !== 'CANCELLED' && $booking->status !== 'CHECKED_OUT')
                     <div class="bg-white rounded-xl shadow-lg p-6">
                         <h3 class="text-xl font-bold text-gray-800 mb-4">Actions</h3>

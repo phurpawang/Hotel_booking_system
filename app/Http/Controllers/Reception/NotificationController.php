@@ -4,31 +4,26 @@ namespace App\Http\Controllers\Reception;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     /**
-     * Display notifications
+     * Display receptionist notifications
      */
     public function index()
     {
         $user = Auth::user();
         
-        $notifications = Notification::where('hotel_id', $user->hotel_id)
-            ->where(function ($q) use ($user) {
-                $q->whereNull('user_id')
-                  ->orWhere('user_id', $user->id);
-            })
+        $notifications = Notification::where('user_id', $user->id)
+            ->where('target_role', 'reception')
             ->orderBy('created_at', 'desc')
-            ->paginate(20);
+            ->paginate(15);
 
-        $unreadCount = Notification::where('hotel_id', $user->hotel_id)
-            ->where(function ($q) use ($user) {
-                $q->whereNull('user_id')
-                  ->orWhere('user_id', $user->id);
-            })
+        $unreadCount = Notification::where('user_id', $user->id)
+            ->where('target_role', 'reception')
             ->where('is_read', false)
             ->count();
 
@@ -42,17 +37,14 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         
-        $notification = Notification::where('hotel_id', $user->hotel_id)
-            ->where(function ($q) use ($user) {
-                $q->whereNull('user_id')
-                  ->orWhere('user_id', $user->id);
-            })
-            ->findOrFail($id);
+        $notification = Notification::where('id', $id)
+            ->where('user_id', $user->id)
+            ->where('target_role', 'reception')
+            ->firstOrFail();
 
-        $notification->markAsRead();
+        NotificationService::markAsRead($notification);
 
-        return redirect()->back()
-            ->with('success', 'Notification marked as read.');
+        return redirect()->route('reception.notifications.index')->with('success', 'Notification marked as read');
     }
 
     /**
@@ -61,17 +53,9 @@ class NotificationController extends Controller
     public function markAllAsRead()
     {
         $user = Auth::user();
-        
-        Notification::where('hotel_id', $user->hotel_id)
-            ->where(function ($q) use ($user) {
-                $q->whereNull('user_id')
-                  ->orWhere('user_id', $user->id);
-            })
-            ->where('is_read', false)
-            ->update(['is_read' => true]);
+        $count = NotificationService::markAllAsRead($user, 'reception');
 
-        return redirect()->back()
-            ->with('success', 'All notifications marked as read.');
+        return redirect()->back()->with('success', "Marked {$count} notification(s) as read");
     }
 
     /**
@@ -81,16 +65,35 @@ class NotificationController extends Controller
     {
         $user = Auth::user();
         
-        $notification = Notification::where('hotel_id', $user->hotel_id)
-            ->where(function ($q) use ($user) {
-                $q->whereNull('user_id')
-                  ->orWhere('user_id', $user->id);
-            })
-            ->findOrFail($id);
+        $notification = Notification::where('id', $id)
+            ->where('user_id', $user->id)
+            ->where('target_role', 'reception')
+            ->firstOrFail();
 
-        $notification->delete();
+        NotificationService::delete($notification);
 
-        return redirect()->back()
-            ->with('success', 'Notification deleted successfully.');
+        return redirect()->back()->with('success', 'Notification deleted successfully');
+    }
+
+    /**
+     * Get unread notification count (for AJAX)
+     */
+    public function getUnreadCount()
+    {
+        $user = Auth::user();
+        $count = NotificationService::getUnreadCount($user, 'reception');
+        
+        return response()->json(['unreadCount' => $count]);
+    }
+
+    /**
+     * Get recent unread notifications (for AJAX dropdown)
+     */
+    public function getRecent()
+    {
+        $user = Auth::user();
+        $notifications = NotificationService::getUnreadNotifications($user, 'reception', 5);
+        
+        return response()->json(['notifications' => $notifications]);
     }
 }

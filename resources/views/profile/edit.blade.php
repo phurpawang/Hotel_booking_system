@@ -1,39 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - {{ config('app.name') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-        
-        body {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            min-height: 100vh;
-            padding: 40px 0;
-        }
-        
-        .profile-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        .profile-header {
-            background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
-            border-radius: 16px;
-            padding: 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
-            color: white;
-        }
+@extends(
+    strtoupper(Auth::user()->role) === 'MANAGER' ? 'manager.layouts.app' :
+    (in_array(strtoupper(Auth::user()->role), ['RECEPTIONIST', 'RECEPTION']) ? 'reception.layouts.app' : 'layouts.owner-bootstrap')
+)
+
+@section('title', 'Profile Settings')
+
+@section('header')
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Profile Settings</h2>
+    <p class="text-gray-600 text-sm mt-1">Manage your account information</p>
+@endsection
+
+@section('styles')
+<style>
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    .profile-container {
+        max-width: 1200px;
+        padding: 0 20px;
+    }
+    
+    .profile-header {
+        background: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+        border-radius: 16px;
+        padding: 32px;
+        margin-bottom: 24px;
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.15);
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    
+    .profile-header img {
+        height: 70px;
+        width: 70px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid rgba(255,255,255,0.3);
+    }
+    
+    .profile-header-text {
+        flex: 1;
+    }
         
         .profile-header h1 {
             margin: 0;
@@ -224,22 +234,11 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="profile-container">
-        <!-- Header -->
-        <div class="profile-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h1><i class="bi bi-person-circle me-3"></i>My Profile</h1>
-                    <p class="subtitle mb-0">Manage your personal information and account settings</p>
-                </div>
-                <a href="{{ route('dashboard') }}" class="btn btn-light">
-                    <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
-                </a>
-            </div>
-        </div>
+@endsection
 
+@section('content')
+<div class="container-fluid py-4">
+    <div class="profile-container">
         <!-- Success/Error Messages -->
         @if(session('success'))
             <div class="alert alert-success" role="alert">
@@ -482,7 +481,11 @@
             </div>
         </div>
     </div>
+</div>
+@endsection
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+@section('scripts')
+    <script>
+        // Any profile page specific scripts here
+    </script>
+@endsection

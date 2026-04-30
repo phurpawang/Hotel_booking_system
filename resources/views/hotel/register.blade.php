@@ -12,9 +12,12 @@
     <header class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold">Hotel Registration</h1>
-                    <p class="text-sm text-blue-100">Join Bhutan's Leading Hotel Booking Platform</p>
+                <div class="flex items-center gap-4">
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 60px; width: 60px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <h1 class="text-2xl font-bold">Hotel Registration</h1>
+                        <p class="text-sm text-blue-100">Join Bhutan's Leading Hotel Booking Platform</p>
+                    </div>
                 </div>
                 <a href="{{ route('home') }}" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition">
                     <i class="fas fa-arrow-left mr-2"></i> Back to Home

@@ -89,7 +89,7 @@ class ReservationController extends Controller
         $chartData = $this->getBookingChartData($user->hotel_id);
 
         // Occupancy Rate
-        $totalRooms = Room::where('hotel_id', $user->hotel_id)->sum('quantity');
+        $totalRooms = Room::where('hotel_id', $user->hotel_id)->count();
         $occupiedRooms = Booking::where('hotel_id', $user->hotel_id)
             ->where('status', 'CHECKED_IN')
             ->whereDate('check_in_date', '<=', Carbon::today())
@@ -143,7 +143,6 @@ class ReservationController extends Controller
         // Get unique room types with available rooms
         $roomTypes = Room::where('hotel_id', $user->hotel_id)
                     ->where('status', 'AVAILABLE')
-                    ->whereNotIn('status', ['OCCUPIED', 'MAINTENANCE', 'CLEANING'])
                     ->select('room_type', DB::raw('MIN(price_per_night) as min_price'), DB::raw('COUNT(*) as available_count'))
                     ->groupBy('room_type')
                     ->get();
@@ -182,7 +181,6 @@ class ReservationController extends Controller
         $room = Room::where('hotel_id', $user->hotel_id)
                    ->where('room_type', $request->room_type)
                    ->where('status', 'AVAILABLE')
-                   ->whereNotIn('status', ['OCCUPIED', 'MAINTENANCE', 'CLEANING'])
                    ->first();
 
         if (!$room) {
@@ -240,8 +238,9 @@ class ReservationController extends Controller
                 'created_by' => $user->id,
             ]);
 
-            // Auto-update room status to OCCUPIED
-            $room->update(['status' => 'OCCUPIED']);
+            // IMPORTANT: Room status remains AVAILABLE until check-in
+            // Status update only happens when reception staff checks in the guest
+            // This ensures single source of truth: room.status='AVAILABLE' = available for booking
 
             DB::commit();
 
@@ -523,6 +522,21 @@ class ReservationController extends Controller
             }
 
             $booking->update($updateData);
+
+            // Create BookingCommission record if it doesn't exist
+            try {
+                $commissionService = app(\App\Services\CommissionService::class);
+                
+                // Check if commission record already exists
+                $existingCommission = \App\Models\BookingCommission::where('booking_id', $booking->id)->first();
+                
+                if (!$existingCommission) {
+                    $commissionService->createBookingCommission($booking, $paymentMethodType);
+                }
+            } catch (\Exception $commissionError) {
+                // Log commission creation error but don't fail the payment marking
+                \Illuminate\Support\Facades\Log::warning('Failed to create commission for booking ' . $booking->id . ': ' . $commissionError->getMessage());
+            }
 
             return redirect()->back()
                 ->with('success', 'Payment marked as PAID successfully for booking ' . $booking->booking_id);

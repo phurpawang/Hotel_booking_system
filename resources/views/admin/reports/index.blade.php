@@ -3,14 +3,78 @@
 @section('title', 'Reports & Analytics')
 
 @section('content')
-<div class="dashboard-header">
-    <h1>Reports & Analytics</h1>
+<style>
+    .header-section {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+    }
+    .header-section h1 {
+        margin: 0;
+        font-size: 32px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border-left: 4px solid transparent;
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        color: white;
+    }
+    .stat-details h3 {
+        margin: 0 0 5px 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #333;
+    }
+    .stat-details p {
+        margin: 0;
+        font-size: 13px;
+        color: #999;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .data-table tbody tr:nth-child(even) {
+        background: #f9f9f9;
+    }
+    .data-table tbody tr:nth-child(odd) {
+        background: white;
+    }
+</style>
+
+<div class="header-section">
+    <h1><i class="fas fa-chart-line"></i>Reports & Analytics</h1>
 </div>
 
 <!-- Summary Statistics -->
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-icon" style="background: #28a745;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <div class="stat-card" style="border-left-color: #11998e; background: linear-gradient(135deg, rgba(17, 153, 142, 0.05) 0%, white 100%);">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
             <i class="fas fa-dollar-sign"></i>
         </div>
         <div class="stat-details">
@@ -18,8 +82,8 @@
             <p>Total Revenue</p>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background: #007bff;">
+    <div class="stat-card" style="border-left-color: #667eea; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, white 100%);">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
             <i class="fas fa-calendar-check"></i>
         </div>
         <div class="stat-details">
@@ -27,8 +91,8 @@
             <p>Total Reservations</p>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background: #ffc107;">
+    <div class="stat-card" style="border-left-color: #fa709a; background: linear-gradient(135deg, rgba(250, 112, 154, 0.05) 0%, white 100%);">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
             <i class="fas fa-hotel"></i>
         </div>
         <div class="stat-details">
@@ -36,8 +100,8 @@
             <p>Registered Hotels</p>
         </div>
     </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background: #17a2b8;">
+    <div class="stat-card" style="border-left-color: #4facfe; background: linear-gradient(135deg, rgba(79, 172, 254, 0.05) 0%, white 100%);">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
             <i class="fas fa-chart-line"></i>
         </div>
         <div class="stat-details">
@@ -121,12 +185,14 @@
     </div>
 </div>
 
+<div id="monthlyData" style="display: none;">{{ json_encode($monthlyRevenue) }}</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Monthly Revenue Chart
     const ctx = document.getElementById('monthlyRevenueChart').getContext('2d');
-    const monthlyData = @json($monthlyRevenue);
+    const monthlyData = JSON.parse(document.getElementById('monthlyData').textContent);
     
     const labels = [];
     const data = [];

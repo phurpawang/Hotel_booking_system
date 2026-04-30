@@ -21,8 +21,10 @@
     <!-- Modern Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
         <div class="container-fluid px-4">
-            <span class="navbar-brand fw-bold">
-                <i class="bi bi-building me-2"></i>BHBS
+            <span class="navbar-brand fw-bold d-flex align-items-center">
+                <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 35px; width: 35px; border-radius: 50%; object-fit: cover; margin-right: 10px;">
+                <span>BHBS</span>
+                <span style="font-size: 0.8rem; margin-left: 10px; opacity: 0.9;">{{ ucfirst(Auth::user()->role ?? 'User') }}</span>
             </span>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

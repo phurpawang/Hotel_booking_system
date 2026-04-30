@@ -1,191 +1,204 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Property Settings - {{ $hotel->name }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-50">
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-green-900 text-white flex-shrink-0">
-            <div class="p-6 border-b border-green-800">
-                <a href="{{ route('manager.dashboard') }}" class="block">
-                    <h1 class="text-2xl font-bold hover:text-green-300 transition cursor-pointer">
-                        <i class="fas fa-building mr-2"></i>BHBS
-                    </h1>
-                </a>
-                <p class="text-sm text-green-200 mt-1">{{ $hotel->name }}</p>
-                <span class="text-xs bg-green-700 px-2 py-1 rounded mt-2 inline-block">Manager</span>
-            </div>
-            
-            <nav class="p-4">
-                <a href="{{ route('manager.dashboard') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-chart-line mr-3"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="{{ route('manager.reservations.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-calendar-check mr-3"></i>
-                    <span>Reservations</span>
-                </a>
-                <a href="{{ route('manager.rooms.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-bed mr-3"></i>
-                    <span>Rooms</span>
-                </a>
-                <a href="{{ route('manager.rates') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-dollar-sign mr-3"></i>
-                    <span>Rates</span>
-                </a>
-                <a href="{{ route('manager.reports.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="{{ route('manager.property.edit') }}" class="flex items-center px-4 py-3 bg-green-800 rounded-lg mb-2">
-                    <i class="fas fa-cog mr-3"></i>
-                    <span>Property Settings</span>
-                </a>
-                <a href="{{ route('manager.messages.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-envelope mr-3"></i>
-                    <span>Messages</span>
-                </a>
-                <a href="{{ route('manager.deregistration.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-sign-out-alt mr-3"></i>
-                    <span>Deregistration</span>
-                </a>
-                <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-user mr-3"></i>
-                    <span>Profile</span>
-                </a>
-                <form method="POST" action="{{ route('hotel.logout') }}">
-                    @csrf
-                    <button type="submit" class="flex items-center px-4 py-3 hover:bg-red-800 rounded-lg mb-2 transition w-full text-left">
-                        <i class="fas fa-sign-out-alt mr-3"></i>
-                        <span>Logout</span>
-                    </button>
-                </form>
-            </nav>
-        </aside>
+@extends('manager.layouts.app')
 
-        <!-- Main Content -->
-        <div class="flex-1 p-8">
-            <div class="max-w-4xl mx-auto">
-                <!-- Header -->
-                <div class="mb-6">
-                    <h2 class="text-3xl font-bold text-gray-800 mb-2">Property Settings</h2>
-                    <p class="text-gray-600">Manage your hotel property information</p>
-                </div>
+@section('title', 'Property Settings')
 
-                <!-- Success Message -->
-                @if(session('success'))
-                <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded">
-                    <div class="flex items-center">
-                        <i class="fas fa-check-circle mr-2"></i>
-                        <p>{{ session('success') }}</p>
-                    </div>
-                </div>
-                @endif
+@section('header')
+<h1 class="text-2xl font-bold text-gray-800">Property Settings</h1>
+<p class="text-gray-600 mt-1">Manage your hotel property information</p>
+@endsection
 
-                <!-- Error Messages -->
-                @if($errors->any())
-                <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
-                    <div class="flex items-center mb-2">
-                        <i class="fas fa-exclamation-circle mr-2"></i>
-                        <p class="font-semibold">Please correct the following errors:</p>
-                    </div>
-                    <ul class="list-disc list-inside ml-6">
-                        @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                @endif
-
-                <!-- Property Settings Form -->
-                <div class="bg-white rounded-lg shadow-md p-6">
-                    <form method="POST" action="{{ route('manager.property.update') }}" enctype="multipart/form-data">
-                        @csrf
-                        @method('PUT')
-
-                        <!-- Hotel Name -->
-                        <div class="mb-6">
-                            <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-hotel mr-2 text-green-600"></i>Hotel Name
-                            </label>
-                            <input type="text" name="name" id="name" value="{{ old('name', $hotel->name) }}" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                        </div>
-
-                        <!-- Address -->
-                        <div class="mb-6">
-                            <label for="address" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-map-marker-alt mr-2 text-green-600"></i>Address
-                            </label>
-                            <textarea name="address" id="address" rows="3" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">{{ old('address', $hotel->address) }}</textarea>
-                        </div>
-
-                        <!-- Dzongkhag -->
-                        <div class="mb-6">
-                            <label for="dzongkhag_id" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-flag mr-2 text-green-600"></i>Dzongkhag
-                            </label>
-                            <select name="dzongkhag_id" id="dzongkhag_id" required
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                                <option value="">Select Dzongkhag</option>
-                                @foreach($dzongkhags as $dzongkhag)
-                                <option value="{{ $dzongkhag->id }}" {{ old('dzongkhag_id', $hotel->dzongkhag_id) == $dzongkhag->id ? 'selected' : '' }}>
-                                    {{ $dzongkhag->name }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Description -->
-                        <div class="mb-6">
-                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-align-left mr-2 text-green-600"></i>Description
-                            </label>
-                            <textarea name="description" id="description" rows="5"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">{{ old('description', $hotel->description) }}</textarea>
-                            <p class="text-sm text-gray-500 mt-1">Describe your property, amenities, and services</p>
-                        </div>
-
-                        <!-- Current Property Image -->
-                        @if($hotel->property_image)
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-image mr-2 text-green-600"></i>Current Property Image
-                            </label>
-                            <div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
-                                <img src="{{ asset('storage/' . $hotel->property_image) }}" alt="Property Image"
-                                    class="max-w-md h-48 object-cover rounded-lg shadow-sm">
-                            </div>
-                        </div>
-                        @endif
-
-                        <!-- Upload New Property Image -->
-                        <div class="mb-6">
-                            <label for="property_image" class="block text-sm font-medium text-gray-700 mb-2">
-                                <i class="fas fa-upload mr-2 text-green-600"></i>{{ $hotel->property_image ? 'Update Property Image' : 'Upload Property Image' }}
-                            </label>
-                            <input type="file" name="property_image" id="property_image" accept="image/jpeg,image/jpg,image/png"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                            <p class="text-sm text-gray-500 mt-1">Accepted formats: JPG, JPEG, PNG (Max size: 2MB)</p>
-                        </div>
-
-                        <!-- Submit Button -->
-                        <div class="flex justify-end">
-                            <button type="submit"
-                                class="bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-lg font-semibold hover:from-green-700 hover:to-green-800 transition shadow-md">
-                                <i class="fas fa-save mr-2"></i>Update Property Settings
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+@section('content')
+<div style="max-width: 1400px; margin: 0 auto; padding: 2rem; background: linear-gradient(135deg, #f5f7fa 0%, #f9fafb 100%); min-height: 100vh;">
+    
+    <!-- Dashboard Header -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 3rem 2.5rem; border-radius: 20px; margin-bottom: 2.5rem; box-shadow: 0 10px 40px rgba(102, 126, 234, 0.35); animation: slideInDown 0.5s ease-out;">
+        <h2 style="margin: 0 0 0.5rem 0; font-weight: 700; font-size: 2.2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);"><i class="fas fa-cog me-3"></i>Property Settings</h2>
+        <p style="margin: 0; opacity: 0.95; font-size: 1.05rem;">Manage your hotel property information</p>
     </div>
-</body>
-</html>
+
+    @if(session('success'))
+    <div style="background: linear-gradient(135deg, #10b98115 0%, #06b6d415 100%); border-left: 5px solid #10b981; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; animation: slideInUp 0.4s ease-out;">
+        <div style="color: #059669; font-weight: 700;"><i class="fas fa-check-circle me-2"></i>{{ session('success') }}</div>
+    </div>
+    @endif
+
+    @if($errors->any())
+    <div style="background: linear-gradient(135deg, #dc262615 0%, #b91c1c15 100%); border-left: 5px solid #dc2626; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; animation: slideInUp 0.4s ease-out;">
+        <div style="color: #991b1b; font-weight: 700; margin-bottom: 0.75rem;"><i class="fas fa-exclamation-circle me-2"></i>Please correct the following errors:</div>
+        <ul style="margin: 0; padding-left: 1.5rem; color: #991b1b;">
+            @foreach($errors->all() as $error)
+            <li style="margin-bottom: 0.5rem;">{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+
+    <!-- Property Settings Form -->
+    <div style="background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); overflow: hidden; border: 1px solid #f0f0f0; animation: slideInUp 0.6s ease-out;">
+        <form method="POST" action="{{ route('manager.property.update') }}" enctype="multipart/form-data">
+            @csrf
+            @method('PUT')
+            
+            <div style="padding: 2.5rem;">
+                <!-- Hotel Name -->
+                <div style="margin-bottom: 2rem;">
+                    <label for="name" style="display: block; color: #667eea; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem;">
+                        <i class="fas fa-hotel me-2"></i>Hotel Name
+                    </label>
+                    <input type="text" name="name" id="name" value="{{ old('name', $hotel->name) }}" required 
+                        class="form-input @error('name') form-input-error @enderror">
+                    @error('name')
+                    <small style="color: #dc2626; display: block; margin-top: 0.5rem;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <!-- Address -->
+                <div style="margin-bottom: 2rem;">
+                    <label for="address" style="display: block; color: #667eea; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem;">
+                        <i class="fas fa-map-marker-alt me-2"></i>Address
+                    </label>
+                    <textarea name="address" id="address" rows="3" required 
+                        class="form-input @error('address') form-input-error @enderror">{{ old('address', $hotel->address) }}</textarea>
+                    @error('address')
+                    <small style="color: #dc2626; display: block; margin-top: 0.5rem;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <!-- Dzongkhag -->
+                <div style="margin-bottom: 2rem;">
+                    <label for="dzongkhag_id" style="display: block; color: #667eea; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem;">
+                        <i class="fas fa-flag me-2"></i>Dzongkhag
+                    </label>
+                    <select name="dzongkhag_id" id="dzongkhag_id" required 
+                        class="form-input @error('dzongkhag_id') form-input-error @enderror">
+                        <option value="">Select Dzongkhag</option>
+                        @foreach($dzongkhags as $dzongkhag)
+                        <option value="{{ $dzongkhag->id }}" {{ old('dzongkhag_id', $hotel->dzongkhag_id) == $dzongkhag->id ? 'selected' : '' }}>
+                            {{ $dzongkhag->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                    @error('dzongkhag_id')
+                    <small style="color: #dc2626; display: block; margin-top: 0.5rem;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <!-- Map Location -->
+                <div style="margin-bottom: 2rem;">
+                    <label for="pin_location" style="display: block; color: #667eea; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem;">
+                        <i class="fas fa-map-pin me-2"></i>Map Location (Google Maps URL or Coordinates)
+                    </label>
+                    <input type="text" name="pin_location" id="pin_location" value="{{ old('pin_location', $hotel->pin_location) }}" 
+                        class="form-input @error('pin_location') form-input-error @enderror"
+                        placeholder="e.g., Google Maps URL or 27.3081,89.6007">
+                    <small style="color: #999; display: block; margin-top: 0.5rem;">Paste Google Maps URL or enter coordinates as latitude,longitude</small>
+                    @error('pin_location')
+                    <small style="color: #dc2626; display: block; margin-top: 0.5rem;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <!-- Description -->
+                <div style="margin-bottom: 2rem;">
+                    <label for="description" style="display: block; color: #667eea; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem;">
+                        <i class="fas fa-align-left me-2"></i>Description
+                    </label>
+                    <textarea name="description" id="description" rows="5" 
+                        class="form-input @error('description') form-input-error @enderror">{{ old('description', $hotel->description) }}</textarea>
+                    <small style="color: #999; display: block; margin-top: 0.5rem;">Describe your property, amenities, and services</small>
+                    @error('description')
+                    <small style="color: #dc2626; display: block; margin-top: 0.5rem;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <!-- Current Property Image -->
+                @if($hotel->property_image)
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; color: #667eea; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem;">
+                        <i class="fas fa-image me-2"></i>Current Property Image
+                    </label>
+                    <div style="border: 2px solid #e5e7eb; border-radius: 10px; padding: 1.5rem; background: #f9f9f9;">
+                        <img src="{{ asset('storage/' . $hotel->property_image) }}" alt="Property Image"
+                            style="max-width: 100%; max-height: 300px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    </div>
+                </div>
+                @endif
+
+                <!-- Upload New Property Image -->
+                <div style="margin-bottom: 2rem;">
+                    <label for="property_image" style="display: block; color: #667eea; font-weight: 700; font-size: 0.9rem; text-transform: uppercase; margin-bottom: 0.75rem;">
+                        <i class="fas fa-upload me-2"></i>{{ $hotel->property_image ? 'Update Property Image' : 'Upload Property Image' }}
+                    </label>
+                    <input type="file" name="property_image" id="property_image" accept="image/jpeg,image/jpg,image/png" 
+                        class="form-input @error('property_image') form-input-error @enderror">
+                    <small style="color: #999; display: block; margin-top: 0.5rem;">Accepted formats: JPG, JPEG, PNG (Max size: 2MB)</small>
+                    @error('property_image')
+                    <small style="color: #dc2626; display: block; margin-top: 0.5rem;">{{ $message }}</small>
+                    @enderror
+                </div>
+
+                <!-- Submit Button -->
+                <div style="display: flex; justify-content: flex-end; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+                    <button type="submit" 
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.75rem 2rem; border-radius: 10px; border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.75rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);"
+                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(102, 126, 234, 0.4)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(102, 126, 234, 0.3)'">
+                        <i class="fas fa-save"></i>Update Property Settings
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<style>
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Form input styles */
+    .form-input {
+        width: 100%;
+        background-color: #ffffff;
+        border: 2px solid #e5e7eb;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-family: inherit;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-input-error {
+        border-color: #dc2626 !important;
+    }
+
+    .form-input-error:focus {
+        box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1) !important;
+    }
+</style>
+@endsection

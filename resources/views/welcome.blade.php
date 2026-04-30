@@ -65,8 +65,8 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm position-fixed w-100" style="z-index: 1000;">
         <div class="container">
-            <a class="navbar-brand navbar-brand-custom" href="#">
-                <i class="bi bi-building me-2"></i>BHBS
+            <a class="navbar-brand navbar-brand-custom" href="#" style="display: flex; align-items: center;">
+                <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 50px; width: 50px; border-radius: 50%; object-fit: cover; background: white; padding: 2px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

@@ -16,7 +16,7 @@
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <i class="fas fa-user-shield"></i>
+                <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 80px; width: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 15px;">
                 <h2>Admin Login</h2>
             </div>
             

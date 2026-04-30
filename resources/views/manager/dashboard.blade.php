@@ -1,303 +1,270 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Dashboard - {{ $hotel->name ?? 'BHBS' }}</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body class="bg-gray-50">
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-64 bg-green-900 text-white flex-shrink-0">
-            <div class="p-6 border-b border-green-800">
-                <a href="{{ route('manager.dashboard') }}" class="block">
-                    <h1 class="text-2xl font-bold hover:text-green-300 transition cursor-pointer">
-                        <i class="fas fa-building mr-2"></i>BHBS
-                    </h1>
-                </a>
-                <p class="text-sm text-green-200 mt-1">{{ $hotel->name ?? 'Hotel Name' }}</p>
-                <span class="text-xs bg-green-700 px-2 py-1 rounded mt-2 inline-block">Manager</span>
+@extends('manager.layouts.app')
+
+@section('title', 'Dashboard')
+
+@section('header')
+    <h2 class="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
+    <p class="text-gray-600 text-sm">Welcome back, {{ Auth::user()->name }}</p>
+@endsection
+
+@section('content')
+@if(session('success'))
+<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+    {{ session('success') }}
+</div>
+@endif
+
+<!-- Deregistration Request Alert -->
+@if(isset($deregistrationRequest) && $deregistrationRequest)
+<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-md">
+    <div class="flex items-center justify-between">
+        <div class="flex items-center">
+            <i class="fas fa-exclamation-triangle text-2xl mr-3"></i>
+            <div>
+                <p class="font-bold text-lg">Pending Deregistration Request</p>
+                <p class="text-sm">Your hotel deregistration request is under review. Submitted on {{ $deregistrationRequest->created_at->format('F d, Y') }}.</p>
             </div>
-            
-            <nav class="p-4">
-                <a href="{{ route('manager.reservations.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-calendar-check mr-3"></i>
-                    <span>Reservations</span>
-                </a>
-                <a href="{{ route('manager.rooms.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-bed mr-3"></i>
-                    <span>Rooms</span>
-                </a>
-                <a href="{{ route('manager.room-status.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-door-open mr-3"></i>
-                    <span>Room Status</span>
-                </a>
-                <a href="{{ route('manager.rates') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-dollar-sign mr-3"></i>
-                    <span>Rates</span>
-                </a>
-                <a href="{{ route('manager.reports') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-chart-bar mr-3"></i>
-                    <span>Reports</span>
-                </a>
-                <a href="{{ route('manager.property.edit') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-cog mr-3"></i>
-                    <span>Property Settings</span>
-                </a>
-                <a href="{{ route('manager.messages.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-envelope mr-3"></i>
-                    <span>Messages</span>
-                </a>
-                <a href="{{ route('manager.deregistration.index') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-sign-out-alt mr-3"></i>
-                    <span>Deregistration</span>
-                </a>
-                <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-3 hover:bg-green-800 rounded-lg mb-2 transition">
-                    <i class="fas fa-user-circle mr-3"></i>
-                    <span>Profile</span>
-                </a>
-                
-                <div class="border-t border-green-800 mt-4 pt-4">
-                    <form method="POST" action="{{ route('hotel.logout') }}">
-                        @csrf
-                        <button type="submit" class="flex items-center px-4 py-3 hover:bg-red-600 rounded-lg w-full transition">
-                            <i class="fas fa-sign-out-alt mr-3"></i>
-                            <span>Logout</span>
-                        </button>
-                    </form>
-                </div>
-            </nav>
-        </aside>
+        </div>
+        <a href="{{ route('manager.deregistration.index') }}" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2 rounded transition">
+            View Details
+        </a>
+    </div>
+</div>
+@endif
 
-        <!-- Main Content -->
-        <div class="flex-1 overflow-x-hidden">
-            <!-- Header -->
-            <header class="bg-white shadow-sm border-b">
-                <div class="px-8 py-4 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Manager Dashboard</h2>
-                        <p class="text-gray-600 text-sm">Welcome back, {{ Auth::user()->name }}</p>
-                    </div>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-sm text-gray-600">{{ \Carbon\Carbon::now()->format('l, F d, Y') }}</span>
-                        <div class="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center text-white font-semibold">
-                            {{ substr(Auth::user()->name, 0, 1) }}
-                        </div>
-                    </div>
-                </div>
-            </header>
+<!-- Colorful Statistics Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-sm opacity-90">Total Bookings</div>
+            <i class="fas fa-calendar-check text-3xl opacity-90"></i>
+        </div>
+        <div class="text-4xl font-bold mb-2">{{ $totalBookings ?? 0 }}</div>
+        <div class="text-xs opacity-90"><i class="fas fa-chart-line"></i> All time</div>
+    </div>
 
-            <!-- Dashboard Content -->
-            <main class="p-8">
-                @if(session('success'))
-                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                    {{ session('success') }}
-                </div>
-                @endif
+    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-sm opacity-90">Today Check-ins</div>
+            <i class="fas fa-door-open text-3xl opacity-90"></i>
+        </div>
+        <div class="text-4xl font-bold mb-2">{{ $todayCheckIns ?? 0 }}</div>
+        <div class="text-xs opacity-90"><i class="fas fa-arrow-down"></i> Arriving</div>
+    </div>
 
-                <!-- Colorful Statistics Cards (No Revenue for Manager) -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <!-- Total Bookings -->
-                    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="text-sm opacity-90">Total Bookings</div>
-                            <i class="fas fa-calendar-check text-3xl opacity-90"></i>
-                        </div>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['total'] ?? 0 }}</div>
-                        <div class="text-xs opacity-90">
-                            <i class="fas fa-chart-line"></i> All time
-                        </div>
-                    </div>
+    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-sm opacity-90">Today Check-outs</div>
+            <i class="fas fa-door-closed text-3xl opacity-90"></i>
+        </div>
+        <div class="text-4xl font-bold mb-2">{{ $todayCheckOuts ?? 0 }}</div>
+        <div class="text-xs opacity-90"><i class="fas fa-arrow-up"></i> Departing</div>
+    </div>
 
-                    <!-- Today Check-ins -->
-                    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="text-sm opacity-90">Today Check-ins</div>
-                            <i class="fas fa-door-open text-3xl opacity-90"></i>
-                        </div>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['today_checkins'] ?? 0 }}</div>
-                        <div class="text-xs opacity-90">
-                            <i class="fas fa-arrow-down"></i> Arriving
-                        </div>
-                    </div>
+    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+        <div class="flex items-center justify-between mb-3">
+            <div class="text-sm opacity-90">Pending Bookings</div>
+            <i class="fas fa-clock text-3xl opacity-90"></i>
+        </div>
+        <div class="text-4xl font-bold mb-2">{{ $stats['pending'] ?? $pendingBookings ?? 0 }}</div>
+        <div class="text-xs opacity-90"><i class="fas fa-hourglass-half"></i> Awaiting confirmation</div>
+    </div>
+</div>
 
-                    <!-- Today Check-outs -->
-                    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="text-sm opacity-90">Today Check-outs</div>
-                            <i class="fas fa-door-closed text-3xl opacity-90"></i>
-                        </div>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['today_checkouts'] ?? 0 }}</div>
-                        <div class="text-xs opacity-90">
-                            <i class="fas fa-arrow-up"></i> Departing
-                        </div>
-                    </div>
+<!-- Room Status Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+        <i class="fas fa-check-circle text-5xl mb-3 opacity-90"></i>
+        <div class="text-4xl font-bold mb-2">{{ ($availableRooms ?? 0) + ($stats['checked_in'] ?? 0) }}</div>
+        <div class="text-sm opacity-90">Total Rooms</div>
+    </div>
 
-                    <!-- Pending Bookings -->
-                    <div class="rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="text-sm opacity-90">Pending Bookings</div>
-                            <i class="fas fa-clock text-3xl opacity-90"></i>
-                        </div>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['pending'] ?? 0 }}</div>
-                        <div class="text-xs opacity-90">
-                            <i class="fas fa-hourglass-half"></i> Awaiting payment
-                        </div>
-                    </div>
-                </div>
+    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+        <i class="fas fa-door-open text-5xl mb-3 opacity-90"></i>
+        <div class="text-4xl font-bold mb-2">{{ $availableRooms ?? 0 }}</div>
+        <div class="text-sm opacity-90">Available Rooms</div>
+    </div>
 
-                <!-- Additional Status Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <!-- Confirmed -->
-                    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                        <i class="fas fa-check-circle text-5xl mb-3 opacity-90"></i>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['confirmed'] ?? 0 }}</div>
-                        <div class="text-sm opacity-90">Confirmed</div>
-                    </div>
+    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #868f96 0%, #596164 100%);">
+        <i class="fas fa-bed text-5xl mb-3 opacity-90"></i>
+        <div class="text-4xl font-bold mb-2">{{ $stats['checked_in'] ?? 0 }}</div>
+        <div class="text-sm opacity-90">Occupied Rooms</div>
+    </div>
 
-                    <!-- Checked In -->
-                    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <i class="fas fa-user-check text-5xl mb-3 opacity-90"></i>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['checked_in'] ?? 0 }}</div>
-                        <div class="text-sm opacity-90">Checked In</div>
-                    </div>
+    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
+        <i class="fas fa-percent text-5xl mb-3 opacity-90"></i>
+        <div class="text-4xl font-bold mb-2">{{ round(($occupancyRate ?? 0) * 100) }}%</div>
+        <div class="text-sm opacity-90">Occupancy Rate</div>
+    </div>
+</div>
 
-                    <!-- Checked Out -->
-                    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #868f96 0%, #596164 100%);">
-                        <i class="fas fa-sign-out-alt text-5xl mb-3 opacity-90"></i>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['checked_out'] ?? 0 }}</div>
-                        <div class="text-sm opacity-90">Checked Out</div>
-                    </div>
+<!-- Quick Actions - Guest Questions -->
+<div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-8">
+    <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-gray-800 flex items-center">
+            <i class="fas fa-comments text-green-600 mr-2"></i>Guest Questions
+        </h3>
+        <a href="{{ route('manager.inquiries.index') }}" class="text-xs font-semibold text-green-600 hover:text-green-800">All →</a>
+    </div>
 
-                    <!-- Cancelled -->
-                    <div class="rounded-xl shadow-lg p-8 text-white text-center transform hover:scale-105 transition-transform" style="background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);">
-                        <i class="fas fa-times-circle text-5xl mb-3 opacity-90"></i>
-                        <div class="text-4xl font-bold mb-2">{{ $stats['cancelled'] ?? 0 }}</div>
-                        <div class="text-sm opacity-90">Cancelled</div>
-                    </div>
-                </div>
-
-                <!-- Commission Information (Readonly) -->
-                <div class="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg p-6 mb-8 text-white">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-info-circle text-2xl"></i>
-                            <div>
-                                <h3 class="text-lg font-bold">This Month's Commission Info (View Only)</h3>
-                                <p class="text-xs opacity-90">{{ \Carbon\Carbon::now()->format('F Y') }} - Managers can view but not modify</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- Total Bookings -->
-                        <div class="bg-white bg-opacity-10 backdrop-blur rounded-lg p-4">
-                            <div class="text-xs opacity-80 mb-1">Total Bookings</div>
-                            <div class="text-2xl font-bold">{{ $commissionInfo['total_bookings'] ?? 0 }}</div>
-                            <div class="text-xs opacity-70 mt-1">
-                                <i class="fas fa-credit-card mr-1"></i>Online: {{ $commissionInfo['pay_online_count'] ?? 0 }} 
-                                <i class="fas fa-money-bill ml-2 mr-1"></i>At Hotel: {{ $commissionInfo['pay_at_hotel_count'] ?? 0 }}
-                            </div>
-                        </div>
-
-                        <!-- Guest Payments -->
-                        <div class="bg-white bg-opacity-10 backdrop-blur rounded-lg p-4">
-                            <div class="text-xs opacity-80 mb-1">Total Guest Payments</div>
-                            <div class="text-2xl font-bold">Nu. {{ number_format($commissionInfo['total_guest_payments'] ?? 0, 2) }}</div>
-                            <div class="text-xs opacity-70 mt-1"><i class="fas fa-users"></i> Final price paid</div>
-                        </div>
-
-                        <!-- Commission Deducted -->
-                        <div class="bg-white bg-opacity-10 backdrop-blur rounded-lg p-4">
-                            <div class="text-xs opacity-80 mb-1">Platform Commission (10%)</div>
-                            <div class="text-2xl font-bold">Nu. {{ number_format($commissionInfo['total_commission'] ?? 0, 2) }}</div>
-                            <div class="text-xs opacity-70 mt-1"><i class="fas fa-percentage"></i> Deducted by platform</div>
-                        </div>
-                    </div>
-
-                    <div class="mt-4 p-3 bg-yellow-500 bg-opacity-20 rounded-lg">
-                        <p class="text-xs">
-                            <i class="fas fa-lock mr-1"></i> 
-                            <strong>Note:</strong> Commission details are managed by the Owner. Managers can view this information for reference only.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Recent Bookings & Quick Actions -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <!-- Recent Bookings -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Recent Bookings</h3>
-                        <div class="space-y-4">
-                            @forelse($recentBookings ?? [] as $booking)
-                            <div class="border-l-4 border-green-600 pl-4 py-2">
-                                <div class="flex justify-between items-start">
-                                    <div>
-                                        <p class="font-semibold text-gray-800">{{ $booking->guest_name }}</p>
-                                        <p class="text-sm text-gray-600">Room: {{ $booking->room->room_number ?? 'N/A' }}</p>
-                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($booking->check_in_date)->format('M d') }} - {{ \Carbon\Carbon::parse($booking->check_out_date)->format('M d') }}</p>
-                                    </div>
-                                    <div class="text-right">
-                                        @if($booking->commission)
-                                            @if($booking->commission->payment_method == 'pay_online')
-                                                <span class="inline-block px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                                                    <i class="fas fa-credit-card"></i> Online
-                                                </span>
-                                            @else
-                                                <span class="inline-block px-2 py-1 text-xs rounded-full bg-purple-100 text-purple-800">
-                                                    <i class="fas fa-money-bill"></i> At Hotel
-                                                </span>
-                                            @endif
-                                        @endif
-                                    </div>
-                                </div>
-                                <span class="inline-block px-2 py-1 text-xs rounded-full mt-1
-                                    @if($booking->status == 'confirmed') bg-green-100 text-green-800
-                                    @elseif($booking->status == 'pending') bg-yellow-100 text-yellow-800
-                                    @else bg-gray-100 text-gray-800 @endif">
-                                    {{ ucfirst($booking->status) }}
-                                </span>
-                            </div>
-                            @empty
-                            <p class="text-gray-500 text-center py-4">No recent bookings</p>
-                            @endforelse
-                        </div>
-                        <a href="{{ route('manager.reservations.index') }}" class="block text-center text-green-600 hover:text-green-800 font-semibold mt-4">
-                            View All Bookings →
-                        </a>
-                    </div>
-
-                    <!-- Quick Actions -->
-                    <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">Quick Actions</h3>
-                        <div class="space-y-3">
-                            <a href="{{ route('manager.reservations.create') }}" class="block bg-green-50 hover:bg-green-100 p-4 rounded-lg transition">
-                                <i class="fas fa-calendar-plus text-green-600 mr-2"></i>
-                                <span class="font-semibold text-gray-800">New Booking</span>
-                            </a>
-                            <a href="{{ route('manager.rooms.index') }}" class="block bg-blue-50 hover:bg-blue-100 p-4 rounded-lg transition">
-                                <i class="fas fa-bed text-blue-600 mr-2"></i>
-                                <span class="font-semibold text-gray-800">Manage Rooms</span>
-                            </a>
-                            <a href="{{ route('manager.rates') }}" class="block bg-purple-50 hover:bg-purple-100 p-4 rounded-lg transition">
-                                <i class="fas fa-tags text-purple-600 mr-2"></i>
-                                <span class="font-semibold text-gray-800">Update Rates</span>
-                            </a>
-                            <a href="{{ route('manager.reports') }}" class="block bg-orange-50 hover:bg-orange-100 p-4 rounded-lg transition">
-                                <i class="fas fa-file-alt text-orange-600 mr-2"></i>
-                                <span class="font-semibold text-gray-800">View Reports</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </main>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+        <div class="bg-green-50 p-2 rounded-lg text-center">
+            <div class="text-xl font-bold text-green-600">{{ $totalInquiries ?? 0 }}</div>
+            <div class="text-xs text-gray-600">Total</div>
+        </div>
+        <div class="bg-orange-50 p-2 rounded-lg text-center">
+            <div class="text-xl font-bold text-orange-600">{{ $pendingInquiries ?? 0 }}</div>
+            <div class="text-xs text-gray-600">Pending</div>
+        </div>
+        <div class="bg-blue-50 p-2 rounded-lg text-center">
+            <div class="text-xl font-bold text-blue-600">{{ $answeredInquiries ?? 0 }}</div>
+            <div class="text-xs text-gray-600">Answered</div>
+        </div>
+        <div class="bg-gray-100 p-2 rounded-lg text-center">
+            <div class="text-xl font-bold text-gray-600">{{ $closedInquiries ?? 0 }}</div>
+            <div class="text-xs text-gray-600">Closed</div>
         </div>
     </div>
 
-    <script>
-        // No charts needed
-    </script>
-</body>
-</html>
+    @if($recentInquiries && $recentInquiries->count() > 0)
+        <div class="space-y-2 mb-4 max-h-64 overflow-y-auto">
+            @foreach($recentInquiries as $inquiry)
+            <div class="bg-gray-50 p-2 rounded-lg border-l-4 @if($inquiry->status === 'PENDING') border-orange-500 @elseif($inquiry->status === 'ANSWERED') border-green-500 @else border-gray-400 @endif hover:bg-gray-100 transition">
+                <div class="flex justify-between items-start gap-1">
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-xs text-gray-800 truncate">{{ $inquiry->guest_name }}</p>
+                        <p class="text-xs text-gray-600 truncate">{{ Str::limit($inquiry->question, 40) }}</p>
+                    </div>
+                    <span class="px-1 py-0.5 text-xs rounded whitespace-nowrap @if($inquiry->status === 'PENDING') bg-orange-100 text-orange-800 @elseif($inquiry->status === 'ANSWERED') bg-green-100 text-green-800 @else bg-gray-200 text-gray-800 @endif">
+                        {{ $inquiry->status }}
+                    </span>
+                </div>
+                <a href="{{ route('manager.inquiries.show', $inquiry->id) }}" class="text-green-600 hover:text-green-800 text-xs font-semibold inline-block mt-1">
+                    Reply <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+            </div>
+            @endforeach
+        </div>
+    @else
+        <p class="text-gray-500 text-center py-6 text-sm">No guest questions yet</p>
+    @endif
+
+    <a href="{{ route('manager.inquiries.index') }}" class="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 rounded-lg text-center transition text-sm">
+        <i class="fas fa-envelope mr-1"></i>Manage Questions
+    </a>
+</div>
+
+<!-- Recent Bookings Table - Enhanced Design -->
+<div class="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden" style="animation: slideInUp 0.6s ease-out;">
+    <!-- Colorful Header -->
+    <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white; padding: 2rem; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <i class="fas fa-calendar-check" style="font-size: 2rem; opacity: 0.9;"></i>
+            <div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; margin: 0;">Recent Bookings</h3>
+                <p style="margin: 0.25rem 0 0 0; opacity: 0.9; font-size: 0.9rem;">Latest guest reservations</p>
+            </div>
+        </div>
+        <a href="{{ route('manager.reservations.index') }}" style="background: rgba(255,255,255,0.2); color: white; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: all 0.3s ease; border: 1px solid rgba(255,255,255,0.3);" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='translateY(-2px)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='translateY(0)'">
+            <i class="fas fa-arrow-right mr-1"></i>View All
+        </a>
+    </div>
+
+    <!-- Table Container -->
+    <div class="overflow-x-auto">
+        <table class="w-full">
+            <thead style="background: linear-gradient(90deg, #0f7d6f 0%, #0d9d7c 100%); border-bottom: 2px solid #0d6b60;">
+                <tr>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-weight: 700; color: white; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-user-circle mr-2" style="color: white; opacity: 0.95;"></i>Guest Name
+                    </th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-weight: 700; color: white; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-door-open mr-2" style="color: white; opacity: 0.95;"></i>Room
+                    </th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-weight: 700; color: white; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-calendar-plus mr-2" style="color: white; opacity: 0.95;"></i>Check-in
+                    </th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-weight: 700; color: white; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-calendar-minus mr-2" style="color: white; opacity: 0.95;"></i>Check-out
+                    </th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: left; font-weight: 700; color: white; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-flag mr-2" style="color: white; opacity: 0.95;"></i>Status
+                    </th>
+                    <th style="padding: 1.25rem 1.5rem; text-align: right; font-weight: 700; color: white; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fas fa-money-bill-wave mr-2" style="color: white; opacity: 0.95;"></i>Amount
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($recentBookings as $booking)
+                <tr style="border-bottom: 1px solid #f0f0f0; transition: all 0.3s ease;" onmouseover="this.style.background='linear-gradient(90deg, #f0f9f8 0%, #f5fffe 100%)'; this.style.boxShadow='inset 0 2px 6px rgba(17, 153, 142, 0.08)'" onmouseout="this.style.background='white'; this.style.boxShadow='none'">
+                    <td style="padding: 1.25rem 1.5rem;">
+                        <div style="font-weight: 600; color: #333; font-size: 0.95rem;">{{ $booking->guest_name }}</div>
+                        <div style="font-size: 0.8rem; color: #999; margin-top: 0.25rem;">{{ $booking->email }}</div>
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem;">
+                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; text-align: center; font-size: 0.9rem; display: inline-block;">
+                            {{ $booking->room->room_number ?? 'N/A' }}
+                        </div>
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem; color: #555; font-size: 0.95rem;">
+                        {{ \Carbon\Carbon::parse($booking->check_in_date)->format('M d, Y') }}
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem; color: #555; font-size: 0.95rem;">
+                        {{ \Carbon\Carbon::parse($booking->check_out_date)->format('M d, Y') }}
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem;">
+                        @if(strtolower($booking->status ?? 'pending') === 'confirmed')
+                            <span style="background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%); color: #047857; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: inline-block;">
+                                <i class="fas fa-check-circle mr-1"></i>CONFIRMED
+                            </span>
+                        @elseif(strtolower($booking->status ?? 'pending') === 'checked_out' || strtolower($booking->status ?? 'pending') === 'completed')
+                            <span style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #6b7280; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: inline-block;">
+                                <i class="fas fa-check-double mr-1"></i>CHECKED OUT
+                            </span>
+                        @elseif(strtolower($booking->status ?? 'pending') === 'pending')
+                            <span style="background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%); color: #d97706; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: inline-block;">
+                                <i class="fas fa-clock mr-1"></i>PENDING
+                            </span>
+                        @elseif(strtolower($booking->status ?? 'pending') === 'cancelled')
+                            <span style="background: linear-gradient(135deg, #fa8072 0%, #ff6b6b 100%); color: #7f1d1d; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: inline-block;">
+                                <i class="fas fa-times-circle mr-1"></i>CANCELLED
+                            </span>
+                        @else
+                            <span style="background: #f3f4f6; color: #6b7280; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; display: inline-block;">
+                                {{ strtoupper($booking->status ?? 'UNKNOWN') }}
+                            </span>
+                        @endif
+                    </td>
+                    <td style="padding: 1.25rem 1.5rem; text-align: right;">
+                        <div style="font-weight: 700; color: #11998e; font-size: 1.05rem;">Nu. {{ number_format($booking->total_price ?? 0, 2) }}</div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" style="padding: 3rem 1.5rem; text-align: center;">
+                        <div style="color: #999;">
+                            <i class="fas fa-inbox" style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; display: block;"></i>
+                            <p style="font-size: 1rem; margin: 0;">No recent bookings</p>
+                        </div>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+@endsection

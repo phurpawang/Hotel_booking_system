@@ -76,7 +76,7 @@
                 <p class="text-gray-800">
                     <i class="fas fa-envelope mr-2 text-blue-600"></i> support@bhutanhotels.com
                     <span class="mx-3">•</span>
-                    <i class="fas fa-phone mr-2 text-blue-600"></i> +975-XXXXXXXX
+                    <i class="fas fa-phone mr-2 text-blue-600"></i> +975-77397178
                 </p>
             </div>
         </div>

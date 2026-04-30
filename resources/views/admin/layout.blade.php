@@ -19,7 +19,10 @@
         <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2><i class="fas fa-hotel"></i> Hotel Admin</h2>
+                <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 1rem;">
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS Logo" style="height: 55px; width: 55px; border-radius: 50%; object-fit: cover;">
+                    <h2 style="margin: 0;">Admin</h2>
+                </div>
             </div>
             
             <nav class="sidebar-menu">
@@ -77,6 +80,8 @@
                     <button class="sidebar-toggle" id="sidebarToggle">
                         <i class="fas fa-bars"></i>
                     </button>
+                    
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS Logo" style="height: 40px; width: 40px; border-radius: 50%; object-fit: cover; margin: 0 15px;">
                     
                     <div class="search-bar">
                         <i class="fas fa-search"></i>

@@ -160,7 +160,10 @@
                                                    min="0" 
                                                    max="100" 
                                                    step="0.01"
-                                                   readonly>
+                                                   readonly
+                                                   required>
+                                            <!-- Hidden backup field to ensure value is submitted -->
+                                            <input type="hidden" name="commission_rate" value="10.00" id="commission_rate_hidden">
                                             <small class="text-muted">Platform commission</small>
                                         </div>
                                         <div class="col-md-3">
@@ -261,11 +264,6 @@
 </div>
 
 <style>
-    body {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-    }
-
     .dashboard-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 2.5rem;
@@ -395,11 +393,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const commissionRateInput = document.getElementById('commission_rate');
     const commissionAmountInput = document.getElementById('commission_amount');
     const finalPriceInput = document.getElementById('final_price');
+    const commissionRateHidden = document.getElementById('commission_rate_hidden');
     const yourEarningSpan = document.getElementById('your_earning');
+    const roomForm = document.querySelector('form');
 
     function calculateCommission() {
         const basePrice = parseFloat(basePriceInput.value) || 0;
         const commissionRate = parseFloat(commissionRateInput.value) || 10.00;
+        
+        // Validate base price
+        if (basePrice < 0) {
+            basePriceInput.value = '0';
+            return;
+        }
         
         const commissionAmount = Math.round((basePrice * commissionRate / 100) * 100) / 100;
         const finalPrice = Math.round((basePrice + commissionAmount) * 100) / 100;
@@ -407,6 +413,45 @@ document.addEventListener('DOMContentLoaded', function() {
         commissionAmountInput.value = commissionAmount.toFixed(2);
         finalPriceInput.value = finalPrice.toFixed(2);
         yourEarningSpan.textContent = basePrice.toFixed(2);
+        
+        // Keep hidden field in sync
+        if (commissionRateHidden) {
+            commissionRateHidden.value = commissionRate.toFixed(2);
+        }
+    }
+
+    // Form submission validation
+    if (roomForm) {
+        roomForm.addEventListener('submit', function(e) {
+            // Validate required fields
+            if (!basePriceInput.value || parseFloat(basePriceInput.value) <= 0) {
+                e.preventDefault();
+                alert('Please enter a valid base price greater than 0');
+                basePriceInput.focus();
+                return false;
+            }
+            
+            if (!document.querySelector('select[name="room_type"]').value) {
+                e.preventDefault();
+                alert('Please select a room type');
+                document.querySelector('select[name="room_type"]').focus();
+                return false;
+            }
+            
+            if (!document.querySelector('input[name="quantity"]').value || parseFloat(document.querySelector('input[name="quantity"]').value) <= 0) {
+                e.preventDefault();
+                alert('Please enter a valid quantity greater than 0');
+                document.querySelector('input[name="quantity"]').focus();
+                return false;
+            }
+            
+            if (!document.querySelector('input[name="capacity"]').value || parseFloat(document.querySelector('input[name="capacity"]').value) <= 0) {
+                e.preventDefault();
+                alert('Please enter a valid capacity greater than 0');
+                document.querySelector('input[name="capacity"]').focus();
+                return false;
+            }
+        });
     }
 
     basePriceInput.addEventListener('input', calculateCommission);

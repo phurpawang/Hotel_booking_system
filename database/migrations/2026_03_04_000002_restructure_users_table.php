@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,8 +12,14 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // Disable foreign key checks to drop table with constraints
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        
         // Drop existing users table
         Schema::dropIfExists('users');
+        
+        // Re-enable foreign key checks
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
         
         // Create new users table with restructured schema
         Schema::create('users', function (Blueprint $table) {

@@ -35,9 +35,31 @@ class PropertySettingsController extends Controller
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:500',
             'dzongkhag_id' => 'required|exists:dzongkhags,id',
+            'map_latitude' => 'nullable|numeric|between:-90,90',
+            'map_longitude' => 'nullable|numeric|between:-180,180',
+            'pin_location' => 'nullable|string',
             'description' => 'nullable|string|max:2000',
             'property_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // 2MB max
         ]);
+
+        // Parse pin_location if provided to extract coordinates
+        if (!empty($validated['pin_location'])) {
+            $pinLoc = $validated['pin_location'];
+            
+            // Try coordinate format first
+            $coordMatch = preg_match('/(-?\d+\.?\d*)\s*[,]\s*(-?\d+\.?\d*)/', $pinLoc, $matches);
+            if ($coordMatch) {
+                $validated['map_latitude'] = (float)$matches[1];
+                $validated['map_longitude'] = (float)$matches[2];
+            } else {
+                // Try Google Maps URL format
+                $urlMatch = preg_match('/@(-?\d+\.?\d*),(-?\d+\.?\d*)/', $pinLoc, $matches);
+                if ($urlMatch) {
+                    $validated['map_latitude'] = (float)$matches[1];
+                    $validated['map_longitude'] = (float)$matches[2];
+                }
+            }
+        }
 
         // Handle property image upload
         if ($request->hasFile('property_image')) {

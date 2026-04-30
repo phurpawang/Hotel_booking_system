@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Room;
 use App\Models\Booking;
 use App\Models\BookingCommission;
+use App\Models\HotelInquiry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -22,10 +23,10 @@ class ManagerDashboardController extends Controller
         $hotel = $user->hotel;
 
         // Room statistics (using sum of quantities)
-        $totalRooms = Room::where('hotel_id', $user->hotel_id)->sum('quantity');
+        $totalRooms = Room::where('hotel_id', $user->hotel_id)->count();
         $occupiedRooms = Room::where('hotel_id', $user->hotel_id)
                             ->where(DB::raw('UPPER(status)'), 'OCCUPIED')
-                            ->sum('quantity');
+                            ->count();
         $availableRooms = $totalRooms - $occupiedRooms;
         $occupancyRate = $totalRooms > 0 ? round(($occupiedRooms / $totalRooms) * 100) : 0;
 
@@ -122,6 +123,18 @@ class ManagerDashboardController extends Controller
             'cancelled' => Booking::where('hotel_id', $user->hotel_id)->where(DB::raw('UPPER(status)'), 'CANCELLED')->count(),
         ];
 
+        // Guest inquiries statistics
+        $totalInquiries = HotelInquiry::where('hotel_id', $user->hotel_id)->count();
+        $pendingInquiries = HotelInquiry::where('hotel_id', $user->hotel_id)->where('status', 'PENDING')->count();
+        $answeredInquiries = HotelInquiry::where('hotel_id', $user->hotel_id)->where('status', 'ANSWERED')->count();
+        $closedInquiries = HotelInquiry::where('hotel_id', $user->hotel_id)->where('status', 'CLOSED')->count();
+        
+        // Recent inquiries (last 5)
+        $recentInquiries = HotelInquiry::where('hotel_id', $user->hotel_id)
+                                       ->latest()
+                                       ->limit(5)
+                                       ->get();
+
         return view('manager.dashboard', compact(
             'hotel',
             'totalBookings',
@@ -136,7 +149,12 @@ class ManagerDashboardController extends Controller
             'occupancyData',
             'occupancyLabels',
             'stats',
-            'commissionInfo'
+            'commissionInfo',
+            'totalInquiries',
+            'pendingInquiries',
+            'answeredInquiries',
+            'closedInquiries',
+            'recentInquiries'
         ));
     }
 

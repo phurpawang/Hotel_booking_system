@@ -100,10 +100,67 @@ class BookingCommission extends Model
     }
 
     /**
-     * Scope for pay at hotel
+     * Scope for pay at hotel (offline payments)
      */
     public function scopePayAtHotel($query)
     {
         return $query->where('payment_method', 'pay_at_hotel');
+    }
+
+    /**
+     * Scope for pending payment method (offline/cash)
+     */
+    public function scopeOfflinePayments($query)
+    {
+        return $query->where('payment_method', 'pay_at_hotel');
+    }
+
+    /**
+     * Scope for online payments
+     */
+    public function scopeOnlinePayments($query)
+    {
+        return $query->where('payment_method', 'pay_online');
+    }
+
+    /**
+     * Get payment method display name
+     */
+    public function getPaymentMethodDisplayAttribute()
+    {
+        $methods = [
+            'pay_online' => 'Online Payment',
+            'pay_at_hotel' => 'Pay at Hotel',
+        ];
+        return $methods[$this->payment_method] ?? $this->payment_method;
+    }
+
+    /**
+     * Get commission status badge
+     */
+    public function getCommissionStatusBadgeAttribute()
+    {
+        $badges = [
+            'pending' => ['class' => 'warning', 'text' => 'Pending'],
+            'paid' => ['class' => 'success', 'text' => 'Paid'],
+            'cancelled' => ['class' => 'danger', 'text' => 'Cancelled'],
+        ];
+        return $badges[$this->commission_status] ?? ['class' => 'secondary', 'text' => $this->commission_status];
+    }
+
+    /**
+     * Check if this is an online payment
+     */
+    public function isOnlinePayment()
+    {
+        return $this->payment_method === 'pay_online';
+    }
+
+    /**
+     * Check if this is an offline payment
+     */
+    public function isOfflinePayment()
+    {
+        return $this->payment_method === 'pay_at_hotel';
     }
 }

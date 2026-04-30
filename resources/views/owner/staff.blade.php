@@ -12,8 +12,11 @@
         <!-- Sidebar (Same as dashboard) -->
         <aside class="w-64 bg-blue-900 text-white flex-shrink-0">
             <div class="p-6 border-b border-blue-800">
-                <h1 class="text-2xl font-bold">BHBS</h1>
-                <p class="text-sm text-blue-200 mt-1">{{ $hotel->name ?? 'Hotel Name' }}</p>
+                <a href="{{ route('owner.dashboard') }}" class="flex flex-col items-center justify-center">
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 55px; width: 55px; border-radius: 50%; object-fit: cover; margin-bottom: 0.75rem;">
+                    <p class="text-sm font-semibold text-center">{{ auth()->user()->hotel->name ?? 'Hotel Name' }}</p>
+                    <span class="text-xs text-blue-200 mt-1">Owner</span>
+                </a>
             </div>
             
             <nav class="p-4">

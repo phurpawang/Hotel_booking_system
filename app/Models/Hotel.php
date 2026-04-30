@@ -81,11 +81,11 @@ class Hotel extends Model
     }
 
     /**
-     * Calculate total number of rooms (sum of all room quantities)
+     * Calculate total number of rooms (count of room records)
      */
     public function totalRooms()
     {
-        return $this->rooms()->sum('quantity');
+        return $this->rooms()->count();
     }
 
     /**
@@ -129,11 +129,43 @@ class Hotel extends Model
     }
 
     /**
+     * Get inquiries/questions from guests
+     */
+    public function inquiries()
+    {
+        return $this->hasMany(HotelInquiry::class, 'hotel_id', 'id');
+    }
+
+    /**
+     * Get reviews for the hotel
+     */
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'hotel_id', 'id');
+    }
+
+    /**
+     * Get promotions for the hotel
+     */
+    public function promotions()
+    {
+        return $this->hasMany(Promotion::class, 'hotel_id', 'id');
+    }
+
+    /**
      * Get the dzongkhag (location) of the hotel
+     */
+    public function dzongkhag()
+    {
+        return $this->belongsTo(Dzongkhag::class, 'dzongkhag_id');
+    }
+
+    /**
+     * Backward-compatible alias for the dzongkhag relationship
      */
     public function dzongkhagRelation()
     {
-        return $this->belongsTo(Dzongkhag::class, 'dzongkhag_id');
+        return $this->dzongkhag();
     }
 
     /**
@@ -184,12 +216,12 @@ class Hotel extends Model
         $lastHotel = self::orderBy('id', 'desc')->first();
         
         if (!$lastHotel) {
-            return 'HTL001';
+            return 'HTL000001';
         }
         
         $lastNumber = (int) substr($lastHotel->hotel_id, 3);
         $newNumber = $lastNumber + 1;
         
-        return 'HTL' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+        return 'HTL' . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
     }
 }

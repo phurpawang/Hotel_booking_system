@@ -7,7 +7,34 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-gradient-to-br from-green-400 via-blue-500 to-purple-600 min-h-screen">
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold">Booking Confirmation</h1>
+                    <p class="text-sm text-blue-100">Your reservation details</p>
+                </div>
+                <a href="{{ route('guest.home') }}" class="inline-flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded-lg transition">
+                    <i class="fas fa-home mr-2"></i> Back Home
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Reusable Search Bar -->
+    @include('components.search-bar', [
+        'dzongkhags' => \App\Models\Dzongkhag::all(),
+        'sticky' => true,
+        'check_in' => request('check_in'),
+        'check_out' => request('check_out'),
+        'adults' => request('adults', 1),
+        'children' => request('children', 0),
+        'rooms' => request('rooms', 1),
+        'dzongkhag_id' => request('dzongkhag_id')
+    ])
+
     <div class="container mx-auto px-4 py-8">
         <!-- Success Card -->
         <div class="max-w-2xl mx-auto bg-white rounded-xl shadow-2xl p-8">

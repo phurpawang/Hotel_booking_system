@@ -1,6 +1,14 @@
-@extends('layouts.app')
+@extends(
+    strtoupper(Auth::user()->role) === 'MANAGER' ? 'manager.layouts.app' :
+    (in_array(strtoupper(Auth::user()->role), ['RECEPTIONIST', 'RECEPTION']) ? 'reception.layouts.app' : 'layouts.owner-bootstrap')
+)
 
-@section('title', 'Edit Booking - ' . $booking->booking_id)
+@section('title', 'Edit Reservation')
+
+@section('header')
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Edit Reservation</h2>
+    <p class="text-gray-600 text-sm mt-1">Update booking #{{ $booking->id }}</p>
+@endsection
 
 @section('content')
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -10,11 +18,6 @@
 <style>
     * {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-    
-    body {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
     }
     
     .dashboard-container {

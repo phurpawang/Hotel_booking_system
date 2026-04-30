@@ -23,6 +23,7 @@ class User extends Authenticatable
         'mobile',
         'password',
         'role',
+        'status',
         'created_by',
     ];
 

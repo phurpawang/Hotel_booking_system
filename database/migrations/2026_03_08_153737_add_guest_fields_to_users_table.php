@@ -19,7 +19,11 @@ return new class extends Migration
             
             // Add address field for guests
             if (!Schema::hasColumn('users', 'address')) {
-                $table->text('address')->nullable()->after('mobile');
+                if (Schema::hasColumn('users', 'mobile')) {
+                    $table->text('address')->nullable()->after('mobile');
+                } else {
+                    $table->text('address')->nullable()->after('phone');
+                }
             }
             
             // Add profile photo field

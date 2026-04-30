@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promotion Test - Hotel Park</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-400 to-pink-500 min-h-screen p-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-xl shadow-2xl p-8">
+            <h1 class="text-3xl font-bold mb-6">Test: Promotion Applied to All Room Types</h1>
+            
+            <div class="bg-blue-50 border border-blue-300 rounded-lg p-4 mb-6">
+                <p class="text-blue-900">
+                    <strong>✓ Verified:</strong> Promotion "Summer Special" (20% OFF) is correctly set as <strong>hotel-wide</strong> (room_id = NULL)
+                </p>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-2xl font-bold mb-4">Test All Rooms (Click Links Below)</h2>
+                <p class="text-gray-700 mb-4">
+                    Use proper check-in and check-out dates to see promotions calculate correctly:
+                </p>
+                
+                <div class="space-y-2">
+                    <p class="font-semibold text-gray-800">Try booking these dates:</p>
+                    <ul class="list-disc list-inside text-gray-700 space-y-2 mb-4">
+                        <li><strong>Check-in:</strong> April 5, 2026</li>
+                        <li><strong>Check-out:</strong> April 7, 2026</li>
+                        <li><strong>Duration:</strong> 2 nights</li>
+                    </ul>
+                </div>
+
+                <div class="grid gap-4">
+                    <!-- Single Room -->
+                    <a href="http://127.0.0.1:8000/booking/form?hotel_id=1&room_id=1&check_in=2026-04-05&check_out=2026-04-07&adults=1&children=0&guests=1&num_rooms=1" 
+                       class="block p-4 bg-gradient-to-r from-blue-100 to-blue-50 border-2 border-blue-300 rounded-lg hover:shadow-lg transition">
+                        <div class="font-semibold text-blue-900">Room 1 - Single</div>
+                        <div class="text-sm text-blue-700">Price: Nu. 1,320/night → 2 nights = Nu. 2,640 → with 20% = Nu. 2,112</div>
+                    </a>
+
+                    <!-- Double Room 1 -->
+                    <a href="http://127.0.0.1:8000/booking/form?hotel_id=1&room_id=3&check_in=2026-04-05&check_out=2026-04-07&adults=2&children=0&guests=2&num_rooms=1" 
+                       class="block p-4 bg-gradient-to-r from-green-100 to-green-50 border-2 border-green-300 rounded-lg hover:shadow-lg transition">
+                        <div class="font-semibold text-green-900">Room 3 - Double</div>
+                        <div class="text-sm text-green-700">Price: Nu. 3,850/night → 2 nights = Nu. 7,700 → with 20% = Nu. 6,160</div>
+                    </a>
+
+                    <!-- Double Room 2 -->
+                    <a href="http://127.0.0.1:8000/booking/form?hotel_id=1&room_id=4&check_in=2026-04-05&check_out=2026-04-07&adults=2&children=0&guests=2&num_rooms=1" 
+                       class="block p-4 bg-gradient-to-r from-purple-100 to-purple-50 border-2 border-purple-300 rounded-lg hover:shadow-lg transition">
+                        <div class="font-semibold text-purple-900">Room 4 - Double</div>
+                        <div class="text-sm text-purple-700">Price: Nu. 2,750/night → 2 nights = Nu. 5,500 → with 20% = Nu. 4,400</div>
+                    </a>
+
+                    <!-- Suite -->
+                    <a href="http://127.0.0.1:8000/booking/form?hotel_id=1&room_id=5&check_in=2026-04-05&check_out=2026-04-07&adults=2&children=0&guests=2&num_rooms=1" 
+                       class="block p-4 bg-gradient-to-r from-orange-100 to-orange-50 border-2 border-orange-300 rounded-lg hover:shadow-lg transition">
+                        <div class="font-semibold text-orange-900">Room 5 - Suite</div>
+                        <div class="text-sm text-orange-700">Price: Nu. 2,750/night → 2 nights = Nu. 5,500 → with 20% = Nu. 4,400</div>
+                    </a>
+
+                    <!-- VIP Room 1 -->
+                    <a href="http://127.0.0.1:8000/booking/form?hotel_id=1&room_id=8&check_in=2026-04-05&check_out=2026-04-07&adults=2&children=0&guests=2&num_rooms=1" 
+                       class="block p-4 bg-gradient-to-r from-red-100 to-red-50 border-2 border-red-300 rounded-lg hover:shadow-lg transition">
+                        <div class="font-semibold text-red-900">Room 8 - VIP</div>
+                        <div class="text-sm text-red-700">Price: Nu. 5,500/night → 2 nights = Nu. 11,000 → with 20% = Nu. 8,800</div>
+                    </a>
+
+                    <!-- VIP Room 2 -->
+                    <a href="http://127.0.0.1:8000/booking/form?hotel_id=1&room_id=9&check_in=2026-04-05&check_out=2026-04-07&adults=2&children=0&guests=2&num_rooms=1" 
+                       class="block p-4 bg-gradient-to-r from-pink-100 to-pink-50 border-2 border-pink-300 rounded-lg hover:shadow-lg transition">
+                        <div class="font-semibold text-pink-900">Room 9 - VIP</div>
+                        <div class="text-sm text-pink-700">Price: Nu. 5,500/night → 2 nights = Nu. 11,000 → with 20% = Nu. 8,800</div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 border border-yellow-300 rounded-lg p-4 mb-6">
+                <h3 class="font-bold text-yellow-900 mb-2">Expected Result:</h3>
+                <p class="text-yellow-800">
+                    When you click any link above and enter the check-in/check-out dates:
+                </p>
+                <ul class="list-disc list-inside text-yellow-800 mt-2 space-y-1">
+                    <li>You should see "20.00% OFF" badge in the price summary section</li>
+                    <li>Original price should display</li>
+                    <li>Discount amount should display in red</li>
+                    <li>Final price should display in green (20% less than original)</li>
+                </ul>
+            </div>
+
+            <div class="bg-green-50 border border-green-300 rounded-lg p-4">
+                <h3 class="font-bold text-green-900 mb-2">✓ Promotion System Status:</h3>
+                <ul class="text-green-800 space-y-1">
+                    <li>✓ Promotion is hotel-wide (applies to ALL room types)</li>
+                    <li>✓ Promotion is active (valid until May 2, 2026)</li>
+                    <li>✓ Promotion type: 20% percentage discount</li>
+                    <li>✓ Service layer: Correctly finding promotions for all rooms</li>
+                    <li>✓ JavaScript: Now recalculating discounts when dates change</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

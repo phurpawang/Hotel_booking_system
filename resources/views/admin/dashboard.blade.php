@@ -2,6 +2,18 @@
 
 @section('title', 'Dashboard')
 
+@push('styles')
+<style>
+    .no-data {
+        text-align: center;
+        padding: 60px 40px;
+        color: #999;
+        font-style: italic;
+        font-size: 15px;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="dashboard-header">
     <h1>Dashboard</h1>
@@ -117,7 +129,7 @@
 @if(isset($pendingPayouts) && $pendingPayouts->count() > 0)
 <div class="dashboard-card" style="margin-bottom: 2rem;">
     <div class="card-header">
-        <h2><i class="fas fa-money-bill-wave"></i> Pending Hotel Payouts</h2>
+        <h2><i class="fas fa-university"></i> Pending Hotel Payouts</h2>
         <a href="{{ route('admin.commissions.index') }}" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
     </div>
     
@@ -139,27 +151,27 @@
                 <tbody>
                     @foreach($pendingPayouts as $payout)
                         <tr>
-                            <td>{{ $payout->hotel->name ?? 'N/A' }}</td>
+                            <td><strong>{{ $payout->hotel->name ?? 'N/A' }}</strong></td>
                             <td>{{ \Carbon\Carbon::create($payout->year, $payout->month, 1)->format('F Y') }}</td>
-                            <td>{{ $payout->total_bookings }}</td>
-                            <td>Nu. {{ number_format($payout->total_guest_payments, 2) }}</td>
-                            <td style="color: #e74c3c; font-weight: bold;">Nu. {{ number_format($payout->total_commission, 2) }}</td>
-                            <td style="color: #27ae60; font-weight: bold;">Nu. {{ number_format($payout->hotel_payout_amount, 2) }}</td>
+                            <td><span style="background: #e3f2fd; padding: 4px 8px; border-radius: 4px; color: #1976d2; font-weight: 600;">{{ $payout->total_bookings }}</span></td>
+                            <td><span style="color: #1976d2; font-weight: 600;">Nu. {{ number_format($payout->total_guest_payments, 2) }}</span></td>
+                            <td><span style="color: #d32f2f; font-weight: 700;">Nu. {{ number_format($payout->total_commission, 2) }}</span></td>
+                            <td><span style="color: #388e3c; font-weight: 700;">Nu. {{ number_format($payout->hotel_payout_amount, 2) }}</span></td>
                             <td>
                                 @if($payout->payout_status == 'pending')
-                                    <span class="badge badge-warning">Pending</span>
+                                    <span class="badge badge-warning">⏳ Pending</span>
                                 @elseif($payout->payout_status == 'processing')
-                                    <span class="badge badge-info">Processing</span>
+                                    <span class="badge badge-info">⚙️ Processing</span>
                                 @else
-                                    <span class="badge badge-success">Paid</span>
+                                    <span class="badge badge-success">✓ Paid</span>
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('admin.commissions.show', $payout->id) }}" class="btn btn-sm btn-primary">
+                                <a href="{{ route('admin.commissions.show', $payout->id) }}" class="btn btn-sm btn-primary" style="padding: 6px 12px; font-size: 12px; display: inline-block; background: #3b82f6; color: white; text-decoration: none; border-radius: 4px; margin-right: 4px;">
                                     <i class="fas fa-eye"></i> View
                                 </a>
                                 @if($payout->payout_status == 'pending')
-                                    <a href="{{ route('admin.commissions.payout-form', $payout->id) }}" class="btn btn-sm btn-success">
+                                    <a href="{{ route('admin.commissions.payout-form', $payout->id) }}" class="btn btn-sm btn-success" style="padding: 6px 12px; font-size: 12px; display: inline-block; background: #10b981; color: white; text-decoration: none; border-radius: 4px;">
                                         <i class="fas fa-check-circle"></i> Process
                                     </a>
                                 @endif
@@ -210,9 +222,9 @@
                                     <td>
                                         @if($booking->commission)
                                             @if($booking->commission->payment_method == 'pay_online')
-                                                <span class="badge badge-info">Online</span>
+                                                <span class="badge badge-info"><i class="fas fa-globe"></i> Online</span>
                                             @else
-                                                <span class="badge badge-secondary">At Hotel</span>
+                                                <span class="badge badge-secondary"><i class="fas fa-building"></i> At Hotel</span>
                                             @endif
                                         @else
                                             <span style="color: #95a5a6; font-size: 0.85rem;">N/A</span>
@@ -220,11 +232,11 @@
                                     </td>
                                     <td>
                                         @if(strtoupper($booking->status) == 'CONFIRMED')
-                                            <span class="badge badge-success">Confirmed</span>
+                                            <span class="badge badge-success"><i class="fas fa-check"></i> Confirmed</span>
                                         @elseif(strtoupper($booking->status) == 'PENDING')
-                                            <span class="badge badge-warning">Pending</span>
+                                            <span class="badge badge-warning"><i class="fas fa-clock"></i> Pending</span>
                                         @elseif(strtoupper($booking->status) == 'CANCELLED')
-                                            <span class="badge badge-danger">Cancelled</span>
+                                            <span class="badge badge-danger"><i class="fas fa-times"></i> Cancelled</span>
                                         @else
                                             <span class="badge badge-secondary">{{ ucfirst($booking->status) }}</span>
                                         @endif
@@ -274,11 +286,11 @@
                                     <td>{{ $hotel->owner->name ?? 'N/A' }}</td>
                                     <td>
                                         @if($hotel->status == 'APPROVED')
-                                            <span class="badge badge-success">Approved</span>
+                                            <span class="badge badge-success"><i class="fas fa-check-circle"></i> Approved</span>
                                         @elseif($hotel->status == 'PENDING')
-                                            <span class="badge badge-warning">Pending</span>
+                                            <span class="badge badge-warning"><i class="fas fa-hourglass-start"></i> Pending</span>
                                         @elseif($hotel->status == 'REJECTED')
-                                            <span class="badge badge-danger">Rejected</span>
+                                            <span class="badge badge-danger"><i class="fas fa-ban"></i> Rejected</span>
                                         @else
                                             <span class="badge badge-secondary">{{ $hotel->status }}</span>
                                         @endif

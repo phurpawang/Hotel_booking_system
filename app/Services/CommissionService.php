@@ -48,7 +48,7 @@ class CommissionService
             'final_amount' => $finalAmount,
             'payment_method' => $paymentMethodType,
             'commission_status' => 'pending',
-            'booking_date' => $booking->created_at->toDateString(),
+            'booking_date' => $booking->check_in_date,
             'check_in_date' => $booking->check_in_date,
             'check_out_date' => $booking->check_out_date,
         ]);
@@ -78,15 +78,26 @@ class CommissionService
             return null;
         }
 
-        // Calculate totals
-        $totalBookings = $commissions->count();
-        $totalGuestPayments = $commissions->sum('final_amount');
-        $totalCommission = $commissions->sum('commission_amount');
-        $hotelPayoutAmount = $totalGuestPayments - $totalCommission;
+        // Separate online and offline payments
+        $onlineCommissions = $commissions->where('payment_method', 'pay_online')->values();
+        $offlineCommissions = $commissions->where('payment_method', 'pay_at_hotel')->values();
 
-        // Separate by payment method (use final_amount to show what was actually collected)
-        $payOnlineAmount = $commissions->where('payment_method', 'pay_online')->sum('final_amount');
-        $payAtHotelAmount = $commissions->where('payment_method', 'pay_at_hotel')->sum('final_amount');
+        // Calculate Online Payment totals (Platform collects money)
+        $onlinePaymentAmount = $onlineCommissions->sum('final_amount');
+        $onlineCommissionAmount = $onlineCommissions->sum('commission_amount');
+        $onlinePayoutAmount = $onlinePaymentAmount - $onlineCommissionAmount;
+
+        // Calculate Offline Payment totals (Hotel collects money)
+        $offlinePaymentAmount = $offlineCommissions->sum('final_amount');
+        $offlineCommissionDue = $offlineCommissions->sum('commission_amount');
+
+        // Calculate overall totals
+        $totalBookings = $commissions->count();
+        $totalGuestPayments = $onlinePaymentAmount + $offlinePaymentAmount;
+        // For total commission, only count what platform actually collects (online commission)
+        $totalCommission = $onlineCommissionAmount;
+        // Hotel payout = only online payout amount (offline will be tracked separately)
+        $hotelPayoutAmount = $onlinePayoutAmount;
 
         // Create or update payout record
         $payout = HotelPayout::updateOrCreate(
@@ -100,8 +111,16 @@ class CommissionService
                 'total_guest_payments' => $totalGuestPayments,
                 'total_commission' => $totalCommission,
                 'hotel_payout_amount' => $hotelPayoutAmount,
-                'pay_online_amount' => $payOnlineAmount,
-                'pay_at_hotel_amount' => $payAtHotelAmount,
+                'pay_online_amount' => $onlinePaymentAmount,
+                'pay_at_hotel_amount' => $offlinePaymentAmount,
+                'online_payment_amount' => $onlinePaymentAmount,
+                'offline_payment_amount' => $offlinePaymentAmount,
+                'online_commission_amount' => $onlineCommissionAmount,
+                'offline_commission_due' => $offlineCommissionDue,
+                'online_payout_amount' => $onlinePayoutAmount,
+                'payout_status' => 'pending',
+                'online_payout_status' => $onlinePaymentAmount > 0 ? 'pending' : 'paid',
+                'offline_commission_status' => $offlinePaymentAmount > 0 ? 'pending' : 'paid',
             ]
         );
 
@@ -164,17 +183,23 @@ class CommissionService
 
         $commissions = $query->get();
 
-        // Hotel payouts = only for ONLINE payments (platform collected, owes hotel 90%)
-        // For Cash/Card/Bank Transfer = hotel collected directly, owes platform 10%
-        $onlinePayments = $commissions->where('payment_method', 'pay_online');
-        $hotelPayments = $commissions->where('payment_method', 'pay_at_hotel');
+        // Normalize payment method values (some records may use 'ONLINE'/'AT_HOTEL' while newer ones use 'pay_online'/'pay_at_hotel')
+        $onlinePayments = $commissions->filter(function($c) {
+            $pm = strtolower((string) $c->payment_method);
+            return in_array($pm, ['pay_online', 'online', 'payonline']);
+        });
+
+        $hotelPayments = $commissions->filter(function($c) {
+            $pm = strtolower((string) $c->payment_method);
+            return in_array($pm, ['pay_at_hotel', 'at_hotel', 'payathotel', 'pay_at_hotel', 'hotel']);
+        });
 
         return [
             'total_bookings' => $commissions->count(),
             'total_guest_payments' => $commissions->sum('final_amount'),
             'total_revenue' => $commissions->sum('final_amount'), // Alias for backward compatibility
             'total_commission' => $commissions->sum('commission_amount'),
-            'total_hotel_payout' => $onlinePayments->sum('base_amount'), // Only online payments
+            'total_hotel_payout' => $onlinePayments->sum('base_amount'), // Only online payments (hotel share)
             'hotel_owes_commission' => $hotelPayments->sum('commission_amount'), // Hotels owe this to platform
             'pay_online_bookings' => $onlinePayments->count(),
             'pay_at_hotel_bookings' => $hotelPayments->count(),
@@ -199,9 +224,16 @@ class CommissionService
 
         $commissions = $query->get();
 
-        // Separate online vs hotel payments
-        $onlinePayments = $commissions->where('payment_method', 'pay_online');
-        $hotelPayments = $commissions->where('payment_method', 'pay_at_hotel');
+        // Normalize payment method values
+        $onlinePayments = $commissions->filter(function($c) {
+            $pm = strtolower((string) $c->payment_method);
+            return in_array($pm, ['pay_online', 'online', 'payonline']);
+        });
+
+        $hotelPayments = $commissions->filter(function($c) {
+            $pm = strtolower((string) $c->payment_method);
+            return in_array($pm, ['pay_at_hotel', 'at_hotel', 'payathotel', 'hotel']);
+        });
 
         return [
             'total_bookings' => $commissions->count(),
@@ -213,7 +245,7 @@ class CommissionService
             
             // Payment method breakdown
             'pay_online_amount' => $onlinePayments->sum('final_amount'), // Platform collected
-            'pay_online_payout' => $onlinePayments->sum('base_amount'), // Hotel gets 90%
+            'pay_online_payout' => $onlinePayments->sum('base_amount'), // Hotel gets base_amount
             'pay_at_hotel_amount' => $hotelPayments->sum('final_amount'), // Hotel collected
             'pay_at_hotel_commission' => $hotelPayments->sum('commission_amount'), // Hotel owes 10%
             

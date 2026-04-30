@@ -12,13 +12,35 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-purple-400 via-purple-500 to-pink-500 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <!-- Go Back Button -->
-        <a href="{{ route('guest.hotel', ['id' => $hotel->id]) }}?check_in={{ $validated['check_in'] }}&check_out={{ $validated['check_out'] }}&adults={{ $validated['adults'] ?? 1 }}&children={{ $validated['children'] ?? 0 }}&rooms={{ $validated['num_rooms'] }}" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition mb-6 shadow-lg">
-            <i class="fas fa-arrow-left mr-2"></i> Go Back
-        </a>
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold">Complete Your Booking</h1>
+                    <p class="text-sm text-blue-100">Secure Reservation Form</p>
+                </div>
+                <a href="{{ route('guest.hotel', ['id' => $hotel->id]) }}?check_in={{ $validated['check_in'] }}&check_out={{ $validated['check_out'] }}&adults={{ $validated['adults'] ?? 1 }}&children={{ $validated['children'] ?? 0 }}&rooms={{ $validated['num_rooms'] }}" class="inline-flex items-center bg-green-500 hover:bg-green-600 text-white font-semibold px-6 py-2 rounded-lg transition">
+                    <i class="fas fa-arrow-left mr-2"></i> Go Back
+                </a>
+            </div>
+        </div>
+    </header>
 
+    <!-- Reusable Search Bar -->
+    @include('components.search-bar', [
+        'dzongkhags' => \App\Models\Dzongkhag::all(),
+        'sticky' => true,
+        'check_in' => request('check_in'),
+        'check_out' => request('check_out'),
+        'adults' => request('adults', 1),
+        'children' => request('children', 0),
+        'rooms' => request('rooms', 1),
+        'dzongkhag_id' => request('dzongkhag_id')
+    ])
+
+    <div class="container mx-auto px-4 py-8">
         <!-- Booking Form Card -->
         <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-2xl p-8">
             <!-- Step Indicator -->
@@ -54,8 +76,11 @@
             <form action="{{ route('guest.booking.confirm') }}" method="POST" enctype="multipart/form-data" id="bookingForm" autocomplete="off">
                 @csrf
                 <input type="hidden" name="hotel_id" value="{{ $hotel->id }}">
-                <input type="hidden" name="room_id" value="{{ $room->id }}">
+                <input type="hidden" name="room_type" value="{{ $validated['room_type'] }}">
+                <input type="hidden" name="price" value="{{ $validated['price'] }}">
                 <input type="hidden" name="num_rooms" value="{{ $validated['num_rooms'] }}">
+                <input type="hidden" name="check_in" value="{{ $validated['check_in'] }}">
+                <input type="hidden" name="check_out" value="{{ $validated['check_out'] }}">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <!-- Full Name -->
@@ -113,10 +138,21 @@
 
                 <!-- Price Summary -->
                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-3">Price summary</h3>
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-800">Price summary</h3>
+                        @if($pricingInfo['promotion'])
+                        <span class="bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-2 rounded-full text-sm font-bold">
+                            {{ $pricingInfo['discount_display'] }}
+                        </span>
+                        @endif
+                    </div>
+                    
                     <div class="space-y-2">
                         <p class="text-gray-700">
-                            <span class="font-semibold">Nightly rate:</span> Nu. {{ number_format($room->price_per_night, 2) }}
+                            <span class="font-semibold">Room Type:</span> {{ $validated['room_type'] }}
+                        </p>
+                        <p class="text-gray-700">
+                            <span class="font-semibold">Nightly rate:</span> Nu. {{ number_format($validated['price'], 2) }}
                         </p>
                         <p class="text-gray-700" id="nightsDisplay">
                             <span class="font-semibold">Number of nights:</span> <span id="nightsCount">{{ $nights }}</span>
@@ -124,8 +160,27 @@
                         <p class="text-gray-700">
                             <span class="font-semibold">Number of rooms:</span> {{ $validated['num_rooms'] }}
                         </p>
+                        
+                        @if($pricingInfo['promotion'])
+                        <div class="bg-white border border-orange-300 rounded p-3 my-3">
+                            <p class="text-gray-700 font-semibold text-sm mb-2">
+                                <i class="fas fa-tag text-orange-600 mr-2"></i>{{ $pricingInfo['promotion']->title }}
+                            </p>
+                            <div class="space-y-1 text-sm">
+                                <p class="text-gray-600">
+                                    <span class="font-semibold">Original price:</span> 
+                                    <span class="text-lg font-bold text-gray-900" data-original-price>Nu. {{ number_format($pricingInfo['original_price'], 2) }}</span>
+                                </p>
+                                <p class="text-red-600">
+                                    <span class="font-semibold">Discount:</span> 
+                                    <span class="text-lg font-bold" data-discount-amount>-Nu. {{ number_format($pricingInfo['discount_applied'], 2) }}</span>
+                                </p>
+                            </div>
+                        </div>
+                        @endif
+                        
                         <div class="border-t border-blue-200 pt-2 mt-2">
-                            <p class="text-xl font-bold text-gray-900">
+                            <p class="text-xl font-bold {{ $pricingInfo['promotion'] ? 'text-green-600' : 'text-gray-900' }}">
                                 Total: Nu. <span id="totalAmount">{{ number_format($totalPrice, 2) }}</span>
                             </p>
                         </div>
@@ -150,14 +205,54 @@
         </div>
     </div>
 
+    <!-- Data attributes for JavaScript -->
+    <div id="scriptData" 
+        data-nightly-rate="{{ $validated['price'] }}"
+        data-num-rooms="{{ $validated['num_rooms'] }}"
+        data-has-promotion="{{ isset($pricingInfo['promotion']) && $pricingInfo['promotion'] ? 'true' : 'false' }}"
+        data-promo-type="{{ isset($pricingInfo['promotion']) && $pricingInfo['promotion'] ? $pricingInfo['promotion']->discount_type : '' }}"
+        data-promo-value="{{ isset($pricingInfo['promotion']) && $pricingInfo['promotion'] ? $pricingInfo['promotion']->discount_value : 0 }}"
+        style="display: none;">
+    </div>
+
     <script>
+        // Load data from HTML data attributes
+        const scriptDataElement = document.getElementById('scriptData');
+        const bookingData = {
+            nightlyRate: parseFloat(scriptDataElement.dataset.nightlyRate),
+            numRooms: parseInt(scriptDataElement.dataset.numRooms),
+            promotionData: {
+                exists: scriptDataElement.dataset.hasPromotion === 'true',
+                type: scriptDataElement.dataset.promoType,
+                value: parseFloat(scriptDataElement.dataset.promoValue || 0)
+            }
+        };
+
         // Calculate total amount based on dates
         const checkInInput = document.getElementById('checkInDate');
         const checkOutInput = document.getElementById('checkOutDate');
         const nightsCountSpan = document.getElementById('nightsCount');
         const totalAmountSpan = document.getElementById('totalAmount');
-        const nightlyRate = {{ $room->price_per_night }};
-        const numRooms = {{ $validated['num_rooms'] }};
+        const nightlyRate = bookingData.nightlyRate;
+        const numRooms = bookingData.numRooms;
+
+        function calculateDiscount(originalPrice) {
+            if (!bookingData.promotionData.exists) {
+                return 0;
+            }
+
+            const promoType = bookingData.promotionData.type;
+            const promoValue = bookingData.promotionData.value;
+
+            if (promoType === 'percentage') {
+                return (originalPrice * promoValue) / 100;
+            } else if (promoType === 'fixed') {
+                // Fixed discount should not exceed original price
+                return Math.min(promoValue, originalPrice);
+            }
+
+            return 0;
+        }
 
         function calculateTotal() {
             const checkIn = new Date(checkInInput.value);
@@ -166,10 +261,24 @@
             if (checkIn && checkOut && checkOut > checkIn) {
                 const timeDiff = checkOut - checkIn;
                 const nights = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-                const total = nightlyRate * nights * numRooms;
+                const originalPrice = nightlyRate * nights * numRooms;
+                const discount = calculateDiscount(originalPrice);
+                const finalTotal = Math.max(0, originalPrice - discount);
                 
                 nightsCountSpan.textContent = nights;
-                totalAmountSpan.textContent = total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                totalAmountSpan.textContent = finalTotal.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                // Update discount display if promotion exists
+                if (bookingData.promotionData.exists) {
+                    const discountDisplay = document.querySelector('[data-discount-amount]');
+                    const originalPriceDisplay = document.querySelector('[data-original-price]');
+                    if (discountDisplay) {
+                        discountDisplay.textContent = '-Nu. ' + discount.toFixed(2);
+                    }
+                    if (originalPriceDisplay) {
+                        originalPriceDisplay.textContent = 'Nu. ' + originalPrice.toFixed(2);
+                    }
+                }
             }
         }
 

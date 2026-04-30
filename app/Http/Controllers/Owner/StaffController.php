@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\BhutanPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -39,7 +40,7 @@ class StaffController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'phone' => 'required|string|max:20',
+            'mobile' => ['required', new BhutanPhoneNumber()],
             'role' => 'required|in:MANAGER,RECEPTION',
             'password' => 'required|min:8|confirmed',
         ]);
@@ -48,7 +49,7 @@ class StaffController extends Controller
             'hotel_id' => $hotel->id,
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'mobile' => $validated['phone'],
+            'mobile' => $validated['mobile'],
             'role' => $validated['role'],
             'password' => Hash::make($validated['password']),
             'status' => 'ACTIVE',
@@ -78,14 +79,14 @@ class StaffController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'phone' => 'required|string|max:20',
+            'mobile' => ['required', new BhutanPhoneNumber()],
             'role' => 'required|in:MANAGER,RECEPTION',
         ]);
 
         $staff->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'mobile' => $validated['phone'],
+            'mobile' => $validated['mobile'],
             'role' => $validated['role'],
         ]);
 

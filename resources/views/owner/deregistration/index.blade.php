@@ -1,365 +1,258 @@
-@extends('layouts.dashboard-bootstrap')
+@extends('owner.layouts.app')
 
-@section('title', 'Hotel Deregistration - ' . $hotel->name)
+@section('title', 'Deregistration Request')
 
-@section('styles')
-<style>
-    body {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        min-height: 100vh;
-    }
-    
-    .dashboard-header {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-        color: white;
-        padding: 2.5rem;
-        border-radius: 20px;
-        margin-bottom: 2rem;
-        box-shadow: 0 10px 30px rgba(220, 53, 69, 0.4);
-    }
-    
-    .card {
-        border: none;
-        border-radius: 20px;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
-    }
-    
-    .warning-box {
-        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
-        border-left: 5px solid #ffc107;
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-    }
-    
-    .danger-box {
-        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-        border-left: 5px solid #dc3545;
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-    }
-    
-    .success-box {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        border-left: 5px solid #28a745;
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-    }
-    
-    .info-card {
-        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-control, .form-select {
-        border: 2px solid #e0e6ed;
-        border-radius: 10px;
-        padding: 0.75rem;
-    }
-    
-    .form-control:focus, .form-select:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-    }
-    
-    .btn-danger-gradient {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-        border: none;
-        color: white;
-        padding: 0.75rem 2rem;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-danger-gradient:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
-    }
-    
-    .status-badge {
-        padding: 0.5rem 1rem;
-        border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.9rem;
-    }
-    
-    .status-pending {
-        background: #ffc107;
-        color: #000;
-    }
-    
-    .status-approved {
-        background: #28a745;
-        color: white;
-    }
-    
-    .status-rejected {
-        background: #dc3545;
-        color: white;
-    }
-    
-    .status-cancelled {
-        background: #6c757d;
-        color: white;
-    }
-</style>
+@section('header')
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800 flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>Deregistration Request
+            </h2>
+            <p class="text-gray-600 text-sm mt-1">Request to remove your property from the platform</p>
+        </div>
+        <a href="{{ route('owner.dashboard') }}" class="text-blue-600 hover:text-blue-800">
+            <i class="fas fa-arrow-left mr-2"></i>Back to Dashboard
+        </a>
+    </div>
 @endsection
 
 @section('content')
-<div class="container-fluid py-4">
-    
-    <!-- Dashboard Header -->
-    <div class="dashboard-header">
-        <div class="d-flex justify-content-between align-items-center">
+@if(session('success'))
+<div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded flex items-center">
+    <i class="fas fa-check-circle mr-2"></i>{{ session('success') }}
+</div>
+@endif
+
+@if(session('error'))
+<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded flex items-center">
+    <i class="fas fa-exclamation-circle mr-2"></i>{{ session('error') }}
+</div>
+@endif
+
+<!-- Existing Request Status -->
+@if($deregistrationRequest)
+    @if($deregistrationRequest->status === 'PENDING')
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded mb-6">
+        <div class="flex items-start">
+            <i class="fas fa-hourglass-half text-yellow-600 text-2xl mr-3 mt-1"></i>
             <div>
-                <h1 class="mb-2">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>Hotel Deregistration
-                </h1>
-                <p class="mb-0 opacity-90">Request to remove your property from the platform</p>
-            </div>
-            <a href="{{ route('owner.dashboard') }}" class="btn btn-light">
-                <i class="bi bi-arrow-left me-2"></i>Back to Dashboard
-            </a>
-        </div>
-    </div>
-
-    @if(session('success'))
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    @if(session('error'))
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-x-circle me-2"></i>{{ session('error') }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    @endif
-
-    <!-- Existing Request Status -->
-    @if($deregistrationRequest)
-        @if($deregistrationRequest->status == 'PENDING')
-        <div class="warning-box">
-            <h4><i class="bi bi-hourglass-split me-2"></i>Pending Deregistration Request</h4>
-            <p class="mb-3">You have submitted a deregistration request on {{ $deregistrationRequest->created_at->format('F d, Y') }}.</p>
-            <div class="row">
-                <div class="col-md-6">
-                    <p class="mb-2"><strong>Reason:</strong> {{ ucwords(str_replace('_', ' ', $deregistrationRequest->reason)) }}</p>
-                    <p class="mb-0"><strong>Details:</strong> {{ $deregistrationRequest->reason_details }}</p>
-                </div>
-                <div class="col-md-6 text-end">
-                    <form method="POST" action="{{ route('owner.deregistration.cancel', $deregistrationRequest->id) }}" onsubmit="return confirm('Are you sure you want to cancel this deregistration request?')">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit" class="btn btn-warning">
-                            <i class="bi bi-x-circle me-2"></i>Cancel Request
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        @elseif($deregistrationRequest->status == 'APPROVED')
-        <div class="success-box">
-            <h4><i class="bi bi-check-circle me-2"></i>Deregistration Request Approved</h4>
-            <p class="mb-2">Your deregistration request has been approved by the administrator.</p>
-            <p class="mb-0"><strong>Note:</strong> {{ $deregistrationRequest->admin_notes ?? 'No additional notes.' }}</p>
-        </div>
-        @endif
-    @endif
-
-    <!-- Future Bookings Warning -->
-    @if($futureBookingsCount > 0)
-    <div class="danger-box">
-        <h4><i class="bi bi-calendar-x me-2"></i>Active Future Bookings</h4>
-        <p class="mb-0">
-            You currently have <strong>{{ $futureBookingsCount }}</strong> confirmed booking(s) with future check-in dates. 
-            You must complete or cancel all future bookings before submitting a deregistration request.
-        </p>
-        <div class="mt-3">
-            <a href="{{ route('owner.reservations.index') }}" class="btn btn-primary">
-                <i class="bi bi-calendar-check me-2"></i>View Bookings
-            </a>
-        </div>
-    </div>
-    @endif
-
-    <!-- Deregistration Information -->
-    <div class="card">
-        <div class="card-header py-3" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Important Information</h4>
-        </div>
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="info-card">
-                        <h5 class="mb-3"><i class="bi bi-check-circle text-success me-2"></i>What Happens</h5>
-                        <ul class="mb-0">
-                            <li>Your property will be marked as "Pending Closure"</li>
-                            <li>No new bookings will be accepted</li>
-                            <li>Your listing will be hidden from public view</li>
-                            <li>Admin will review your request within 3-5 business days</li>
-                            <li>Upon approval, all data will be archived</li>
-                        </ul>
+                <h3 class="text-lg font-bold text-yellow-800 mb-2">Pending Deregistration Request</h3>
+                <p class="text-yellow-700 mb-3">You have submitted a deregistration request on <strong>{{ $deregistrationRequest->created_at->format('F d, Y') }}</strong></p>
+                <div class="bg-white rounded p-4 mb-4">
+                    <div class="mb-3">
+                        <p class="text-sm text-gray-600"><strong>Reason:</strong></p>
+                        <p class="text-gray-800">{{ ucwords(str_replace('_', ' ', $deregistrationRequest->reason)) }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600"><strong>Details:</strong></p>
+                        <p class="text-gray-800">{{ $deregistrationRequest->reason_details }}</p>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="info-card">
-                        <h5 class="mb-3"><i class="bi bi-exclamation-triangle text-warning me-2"></i>Before You Proceed</h5>
-                        <ul class="mb-0">
-                            <li>Complete all confirmed bookings</li>
-                            <li>Cancel future reservations with proper notice</li>
-                            <li>Settle outstanding commission payments</li>
-                            <li>Download copies of important reports</li>
-                            <li>Export guest and booking data if needed</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="alert alert-info mt-3">
-                <i class="bi bi-lightbulb me-2"></i>
-                <strong>Note:</strong> Deregistration is a permanent action. Once approved, your property will be removed from the platform. 
-                If you're experiencing temporary issues, consider using "Seasonal Closure" instead.
-            </div>
-        </div>
-    </div>
-
-    <!-- Deregistration Request Form -->
-    @if(!$deregistrationRequest || $deregistrationRequest->status == 'REJECTED')
-    <div class="card">
-        <div class="card-header py-3" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white;">
-            <h4 class="mb-0"><i class="bi bi-file-earmark-text me-2"></i>Submit Deregistration Request</h4>
-        </div>
-        <div class="card-body">
-            @if($deregistrationRequest && $deregistrationRequest->status == 'REJECTED')
-            <div class="alert alert-warning">
-                <h5><i class="bi bi-x-circle me-2"></i>Previous Request Rejected</h5>
-                <p class="mb-2"><strong>Rejection Date:</strong> {{ $deregistrationRequest->reviewed_at->format('F d, Y') }}</p>
-                <p class="mb-0"><strong>Admin Notes:</strong> {{ $deregistrationRequest->admin_notes ?? 'No notes provided.' }}</p>
-            </div>
-            @endif
-
-            @if($futureBookingsCount == 0 && (!$deregistrationRequest || in_array($deregistrationRequest->status, ['REJECTED', 'CANCELLED'])))
-            <form method="POST" action="{{ route('owner.deregistration.store') }}" id="deregistrationForm">
-                @csrf
-
-                <div class="mb-4">
-                    <label for="reason" class="form-label fw-bold">
-                        <i class="bi bi-question-circle me-2"></i>Reason for Deregistration <span class="text-danger">*</span>
-                    </label>
-                    <select name="reason" id="reason" class="form-select @error('reason') is-invalid @enderror" required>
-                        <option value="">-- Select Reason --</option>
-                        <option value="BUSINESS_CLOSED">Business Permanently Closed</option>
-                        <option value="RENOVATION">Property Under Major Renovation</option>
-                        <option value="SEASONAL_CLOSURE">Seasonal/Temporary Closure</option>
-                        <option value="SWITCHING_PLATFORM">Switching to Another Platform</option>
-                        <option value="OTHER">Other Reason</option>
-                    </select>
-                    @error('reason')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="reason_details" class="form-label fw-bold">
-                        <i class="bi bi-chat-left-text me-2"></i>Additional Details <span class="text-danger">*</span>
-                    </label>
-                    <textarea name="reason_details" id="reason_details" rows="5" 
-                        class="form-control @error('reason_details') is-invalid @enderror" 
-                        placeholder="Please provide detailed information about your reason for deregistration..." 
-                        maxlength="1000" required>{{ old('reason_details') }}</textarea>
-                    <div class="form-text">Maximum 1000 characters</div>
-                    @error('reason_details')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="form-check mb-4">
-                    <input type="checkbox" class="form-check-input" id="confirmCheckbox" required>
-                    <label class="form-check-label fw-bold" for="confirmCheckbox">
-                        I understand that this is a permanent action and my property will be removed from the platform after approval.
-                    </label>
-                </div>
-
-                <div class="d-flex gap-3">
-                    <button type="submit" class="btn btn-danger-gradient" id="submitBtn" disabled>
-                        <i class="bi bi-send me-2"></i>Submit Deregistration Request
+                <form method="POST" action="{{ route('owner.deregistration.cancel', $deregistrationRequest->id) }}" onsubmit="return confirm('Are you sure you want to cancel this deregistration request?')">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded font-semibold transition flex items-center">
+                        <i class="fas fa-times-circle mr-2"></i>Cancel Request
                     </button>
-                    <a href="{{ route('owner.dashboard') }}" class="btn btn-secondary">
-                        <i class="bi bi-x me-2"></i>Cancel
-                    </a>
-                </div>
-            </form>
-            @else
-            <div class="alert alert-warning">
-                <i class="bi bi-exclamation-triangle me-2"></i>
-                You cannot submit a deregistration request at this time. Please complete or cancel all future bookings first.
+                </form>
             </div>
-            @endif
         </div>
     </div>
-    @endif
 
-    <!-- Request History -->
-    @if($requestHistory && $requestHistory->count() > 0)
-    <div class="card">
-        <div class="card-header py-3" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
-            <h4 class="mb-0"><i class="bi bi-clock-history me-2"></i>Request History</h4>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Date Submitted</th>
-                            <th>Reason</th>
-                            <th>Status</th>
-                            <th>Reviewed By</th>
-                            <th>Reviewed Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($requestHistory as $req)
-                        <tr>
-                            <td>{{ $req->created_at->format('M d, Y') }}</td>
-                            <td>{{ ucwords(str_replace('_', ' ', $req->reason)) }}</td>
-                            <td>
-                                <span class="status-badge status-{{ strtolower($req->status) }}">
-                                    {{ $req->status }}
-                                </span>
-                            </td>
-                            <td>{{ $req->reviewer->name ?? 'N/A' }}</td>
-                            <td>{{ $req->reviewed_at ? $req->reviewed_at->format('M d, Y') : 'N/A' }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    @elseif($deregistrationRequest->status === 'APPROVED')
+    <div class="bg-green-50 border-l-4 border-green-500 p-6 rounded mb-6">
+        <div class="flex items-start">
+            <i class="fas fa-check-circle text-green-600 text-2xl mr-3"></i>
+            <div>
+                <h3 class="text-lg font-bold text-green-800">Deregistration Request Approved</h3>
+                <p class="text-green-700 mt-2">Your deregistration request has been approved by the administrator.</p>
+                @if($deregistrationRequest->admin_notes)
+                <p class="text-green-700 mt-2"><strong>Notes:</strong> {{ $deregistrationRequest->admin_notes }}</p>
+                @endif
             </div>
         </div>
     </div>
     @endif
+@endif
 
+<!-- Future Bookings Warning -->
+@if($futureBookingsCount > 0)
+<div class="bg-orange-50 border-l-4 border-orange-500 p-6 rounded mb-6">
+    <div class="flex items-start">
+        <i class="fas fa-exclamation-triangle text-orange-600 text-2xl mr-3"></i>
+        <div>
+            <h3 class="text-lg font-bold text-orange-800 mb-2">Cannot Submit Deregistration Request</h3>
+            <p class="text-orange-700 mb-3">You have <strong>{{ $futureBookingsCount }}</strong> confirmed booking(s) with future check-in dates.</p>
+            <p class="text-orange-700 mb-4">Please complete or cancel all future bookings before submitting a deregistration request.</p>
+            <a href="{{ route('owner.reservations.index') }}" class="inline-block bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded font-semibold transition flex items-center w-fit">
+                <i class="fas fa-calendar-check mr-2"></i>View Bookings
+            </a>
+        </div>
+    </div>
+</div>
+@endif
+
+<!-- Information Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- What Happens -->
+    <div class="bg-blue-50 border-l-4 border-blue-500 p-6 rounded">
+        <h3 class="text-lg font-bold text-blue-800 mb-4 flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>What Happens
+        </h3>
+        <ul class="space-y-2 text-blue-700 text-sm">
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Your property will be marked as "Pending Closure"</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>No new bookings will be accepted</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Your listing will be hidden from public view</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Admin will review within 3-5 business days</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Upon approval, all data will be archived</span>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Before You Proceed -->
+    <div class="bg-orange-50 border-l-4 border-orange-500 p-6 rounded">
+        <h3 class="text-lg font-bold text-orange-800 mb-4 flex items-center">
+            <i class="fas fa-exclamation-triangle mr-2"></i>Before You Proceed
+        </h3>
+        <ul class="space-y-2 text-orange-700 text-sm">
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Complete all confirmed bookings</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Cancel future reservations with proper notice</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Settle outstanding commission payments</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Download copies of important reports</span>
+            </li>
+            <li class="flex items-start">
+                <i class="fas fa-chevron-right mr-2 mt-1 flex-shrink-0"></i>
+                <span>Export guest and booking data if needed</span>
+            </li>
+        </ul>
+    </div>
 </div>
 
-<script>
-    // Enable submit button when checkbox is checked
-    document.getElementById('confirmCheckbox')?.addEventListener('change', function() {
-        document.getElementById('submitBtn').disabled = !this.checked;
-    });
+<!-- Important Note -->
+<div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-8">
+    <p class="text-red-800 text-sm flex items-start">
+        <i class="fas fa-lightbulb mr-2 mt-0.5 flex-shrink-0"></i>
+        <strong>Important:</strong> Deregistration is a permanent action. Once approved, your property will be removed from the platform. If you're experiencing temporary issues, consider pausing bookings instead.
+    </p>
+</div>
 
-    // Confirmation before submitting
-    document.getElementById('deregistrationForm')?.addEventListener('submit', function(e) {
-        if (!confirm('Are you absolutely sure you want to submit this deregistration request? This action cannot be undone.')) {
-            e.preventDefault();
-        }
-    });
-</script>
+<!-- Deregistration Request Form -->
+@if(!$deregistrationRequest || $deregistrationRequest->status === 'REJECTED')
+<div class="bg-white rounded-lg shadow-md border border-gray-200 p-8">
+    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
+        <i class="fas fa-file-alt mr-2 text-red-600"></i>Submit Deregistration Request
+    </h3>
+
+    @if($deregistrationRequest && $deregistrationRequest->status === 'REJECTED')
+    <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded mb-6">
+        <h4 class="text-red-800 font-semibold mb-2 flex items-center">
+            <i class="fas fa-times-circle mr-2"></i>Previous Request Rejected
+        </h4>
+        <p class="text-red-700 text-sm mb-2"><strong>Rejection Date:</strong> {{ $deregistrationRequest->reviewed_at->format('F d, Y') }}</p>
+        <p class="text-red-700 text-sm"><strong>Admin Notes:</strong> {{ $deregistrationRequest->admin_notes ?? 'No notes provided.' }}</p>
+    </div>
+    @endif
+
+    @if($futureBookingsCount === 0 && (!$deregistrationRequest || in_array($deregistrationRequest->status, ['REJECTED', 'CANCELLED'])))
+    <form method="POST" action="{{ route('owner.deregistration.store') }}" id="deregistrationForm">
+        @csrf
+
+        <!-- Reason Selection -->
+        <div class="mb-6">
+            <label for="reason" class="block text-sm font-semibold text-gray-700 mb-2">
+                <i class="fas fa-question-circle mr-1 text-red-600"></i>Reason for Deregistration <span class="text-red-600">*</span>
+            </label>
+            <select name="reason" id="reason" required
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('reason') border-red-500 @enderror">
+                <option value="">-- Select Reason --</option>
+                <option value="BUSINESS_CLOSED" {{ old('reason') === 'BUSINESS_CLOSED' ? 'selected' : '' }}>Business Permanently Closed</option>
+                <option value="RENOVATION" {{ old('reason') === 'RENOVATION' ? 'selected' : '' }}>Property Under Major Renovation</option>
+                <option value="SEASONAL_CLOSURE" {{ old('reason') === 'SEASONAL_CLOSURE' ? 'selected' : '' }}>Seasonal/Temporary Closure</option>
+                <option value="SWITCHING_PLATFORM" {{ old('reason') === 'SWITCHING_PLATFORM' ? 'selected' : '' }}>Switching to Another Platform</option>
+                <option value="OTHER" {{ old('reason') === 'OTHER' ? 'selected' : '' }}>Other Reason</option>
+            </select>
+            @error('reason')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- Additional Details -->
+        <div class="mb-6">
+            <label for="reason_details" class="block text-sm font-semibold text-gray-700 mb-2">
+                <i class="fas fa-align-left mr-1 text-red-600"></i>Additional Details <span class="text-red-600">*</span>
+            </label>
+            <textarea name="reason_details" id="reason_details" rows="5" required maxlength="1000"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent @error('reason_details') border-red-500 @enderror"
+                placeholder="Please provide detailed information about your reason for deregistration...">{{ old('reason_details') }}</textarea>
+            <p class="text-xs text-gray-500 mt-1">Maximum 1000 characters</p>
+            @error('reason_details')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <!-- Confirmation Checkbox -->
+        <div class="mb-6">
+            <label class="flex items-start cursor-pointer">
+                <input type="checkbox" id="confirmCheckbox" required
+                    class="mt-1 h-4 w-4 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500">
+                <span class="ml-3 text-sm text-gray-700">
+                    I understand that this is a <strong>permanent action</strong> and my property will be removed from the platform after approval.
+                </span>
+            </label>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex gap-3 justify-end">
+            <a href="{{ route('owner.dashboard') }}" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-semibold transition">
+                <i class="fas fa-times mr-2"></i>Cancel
+            </a>
+            <button type="submit" id="submitBtn" disabled
+                class="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold transition hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center">
+                <i class="fas fa-paper-plane mr-2"></i>Submit Request
+            </button>
+        </div>
+    </form>
+
+    <script>
+        const confirmCheckbox = document.getElementById('confirmCheckbox');
+        const submitBtn = document.getElementById('submitBtn');
+
+        confirmCheckbox.addEventListener('change', function() {
+            submitBtn.disabled = !this.checked;
+        });
+    </script>
+    @else
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
+        <i class="fas fa-ban text-4xl text-gray-400 mb-3"></i>
+        <p class="text-gray-700 font-semibold">Unable to submit deregistration request</p>
+        <p class="text-gray-600 text-sm mt-2">Please resolve the pending issues before proceeding.</p>
+    </div>
+    @endif
+</div>
+@endif
 @endsection

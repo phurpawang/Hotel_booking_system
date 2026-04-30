@@ -51,8 +51,8 @@
                     @endif
                 </div>
 
-                <!-- Hotel ID Display - Always Visible -->
-                @if($hotel->hotel_id)
+                <!-- Hotel ID Display - Only visible after approval -->
+                @if($hotel->hotel_id && strtolower($hotel->status) === 'approved')
                 <div class="bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-lg p-6 mb-6">
                     <div class="text-center">
                         <p class="text-sm font-semibold text-gray-600 mb-2">YOUR HOTEL ID</p>

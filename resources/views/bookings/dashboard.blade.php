@@ -6,11 +6,6 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <style>
-    body {
-        background: #f8f9fa;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    }
-    
     .dashboard-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -391,7 +386,7 @@
                         <h5 class="mb-2"><i class="bi bi-building me-2"></i>Current Occupancy Rate</h5>
                         <div class="progress" style="height: 30px; border-radius: 15px;">
                             <div class="progress-bar" role="progressbar" 
-                                 style="width: {{ $stats['occupancy'] }}%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);" 
+                                 data-occupancy="{{ $stats['occupancy'] }}"
                                  aria-valuenow="{{ $stats['occupancy'] }}" aria-valuemin="0" aria-valuemax="100">
                                 <strong>{{ $stats['occupancy'] }}%</strong>
                             </div>
@@ -724,5 +719,12 @@
             setTimeout(() => alert.remove(), 500);
         });
     }, 5000);
+    
+    // Progress Bar Width from Data Attribute
+    document.querySelectorAll('.progress-bar[data-occupancy]').forEach(bar => {
+        const occupancy = bar.getAttribute('data-occupancy');
+        bar.style.width = occupancy + '%';
+        bar.style.background = 'linear-gradient(90deg, #667eea 0%, #764ba2 100%)';
+    });
 </script>
 @endsection

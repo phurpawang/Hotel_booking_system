@@ -20,10 +20,19 @@ class HotelPayout extends Model
         'hotel_payout_amount',
         'pay_online_amount',
         'pay_at_hotel_amount',
+        'online_payment_amount',
+        'offline_payment_amount',
+        'online_commission_amount',
+        'offline_commission_due',
+        'online_payout_amount',
         'payout_status',
+        'online_payout_status',
+        'offline_commission_status',
         'payout_date',
         'payout_notes',
         'payout_reference',
+        'offline_commission_reference',
+        'offline_commission_received_at',
         'processed_by',
         'processed_at',
     ];
@@ -124,5 +133,96 @@ class HotelPayout extends Model
     {
         return BookingCommission::forHotel($this->hotel_id)
                                 ->forMonth($this->year, $this->month);
+    }
+
+    /**
+     * Mark online payout as paid
+     */
+    public function markOnlinePayoutAsPaid($userId, $reference = null, $notes = null)
+    {
+        $this->update([
+            'online_payout_status' => 'paid',
+            'payout_date' => now(),
+            'payout_reference' => $reference,
+            'payout_notes' => $notes,
+            'processed_by' => $userId,
+            'processed_at' => now(),
+        ]);
+    }
+
+    /**
+     * Mark offline commission as received
+     */
+    public function markOfflineCommissionAsReceived($userId, $reference = null, $notes = null)
+    {
+        $this->update([
+            'offline_commission_status' => 'received',
+            'offline_commission_received_at' => now(),
+            'offline_commission_reference' => $reference,
+            'payout_notes' => $notes,
+            'processed_by' => $userId,
+        ]);
+    }
+
+    /**
+     * Get payout status badge (online)
+     */
+    public function getOnlinePayoutStatusBadgeAttribute()
+    {
+        $badges = [
+            'pending' => ['class' => 'warning', 'text' => '⏳ Pending', 'icon' => 'bi-hourglass-split'],
+            'paid' => ['class' => 'success', 'text' => '✓ Paid', 'icon' => 'bi-check-circle'],
+            'cancelled' => ['class' => 'danger', 'text' => 'Cancelled', 'icon' => 'bi-x-circle'],
+        ];
+        return $badges[$this->online_payout_status] ?? ['class' => 'secondary', 'text' => $this->online_payout_status, 'icon' => 'bi-dash-circle'];
+    }
+
+    /**
+     * Get commission status badge (offline)
+     */
+    public function getOfflineCommissionStatusBadgeAttribute()
+    {
+        $badges = [
+            'pending' => ['class' => 'warning', 'text' => '⏳ Pending', 'icon' => 'bi-hourglass-split'],
+            'received' => ['class' => 'success', 'text' => '✓ Received', 'icon' => 'bi-check-circle'],
+            'cancelled' => ['class' => 'danger', 'text' => 'Cancelled', 'icon' => 'bi-x-circle'],
+        ];
+        return $badges[$this->offline_commission_status] ?? ['class' => 'secondary', 'text' => $this->offline_commission_status, 'icon' => 'bi-dash-circle'];
+    }
+
+    /**
+     * Check if has online payments
+     */
+    public function hasOnlinePayments()
+    {
+        return $this->online_payment_amount > 0;
+    }
+
+    /**
+     * Check if has offline payments
+     */
+    public function hasOfflinePayments()
+    {
+        return $this->offline_payment_amount > 0;
+    }
+
+    /**
+     * Get payment method breakdown
+     */
+    public function getPaymentMethodBreakdown()
+    {
+        return [
+            'online' => [
+                'amount' => $this->online_payment_amount,
+                'commission' => $this->online_commission_amount,
+                'payout' => $this->online_payout_amount,
+                'status' => $this->online_payout_status,
+            ],
+            'offline' => [
+                'amount' => $this->offline_payment_amount,
+                'commission_due' => $this->offline_commission_due,
+                'status' => $this->offline_commission_status,
+            ],
+        ];
     }
 }

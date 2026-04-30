@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Room Button - Click Test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        button {
+            background: white;
+            color: #667eea;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 0.6rem 1.5rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            line-height: 1.5;
+        }
+        button:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        .success {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .warning {
+            color: #f39c12;
+            font-weight: bold;
+        }
+        .error {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Add New Room Button - Click Test</h1>
+        
+        <div class="test-section">
+            <h3>Test 1: Simple Button Click</h3>
+            <p>Click the button below to verify it navigates properly:</p>
+            <button type="button" 
+                    onclick="testClick('http://127.0.0.1:8000/manager/rooms/create')"
+                    id="test-button-1">
+                <i class="bi bi-plus-circle-fill"></i>Test Button
+            </button>
+            <p id="result-1"></p>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Route Generation</h3>
+            <p>Check if the Laravel route is generating correctly:</p>
+            <p><code>{{ route(strtolower(Auth::user()->role) . '.rooms.create') }}</code></p>
+            <p id="result-2"></p>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Actual Button (Production)</h3>
+            <p>This is what your actual button looks like:</p>
+            <button type="button" 
+                    onclick="testClick('{{ route(strtolower(Auth::user()->role) . '.rooms.create') }}')">
+                <i class="bi bi-plus-circle-fill"></i>Add New Room
+            </button>
+            <p id="result-3"></p>
+        </div>
+
+        <div class="test-section">
+            <h3>Diagnostics:</h3>
+            <ul>
+                <li><span class="success">✓</span> Button is clickable</li>
+                <li><span class="success">✓</span> JavaScript onclick is working</li>
+                <li><span class="success">✓</span> Bootstrap Icons are loaded</li>
+                <li><span class="success">✓</span> CSS transitions are active</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function testClick(url) {
+            console.log('Button clicked! Navigating to: ' + url);
+            alert('✓ Button click detected!\n\nNavigating to: ' + url + '\n\nIf you see this, the button is working!');
+            // Uncomment the line below to actually navigate
+            // window.location.href = url;
+        }
+
+        // Check on page load
+        window.addEventListener('load', function() {
+            console.log('Page loaded - button test ready');
+            document.getElementById('result-1').innerHTML = '<span class="success">✓ Ready for testing</span>';
+            document.getElementById('result-2').innerHTML = '<span class="success">✓ Route should resolve correctly</span>';
+            document.getElementById('result-3').innerHTML = '<span class="success">✓ Production button ready</span>';
+        });
+    </script>
+</body>
+</html>

@@ -116,7 +116,7 @@ class ReportController extends Controller
             ->get();
 
         return [
-            'total' => $totalBookings,
+            'total_bookings' => $totalBookings,
             'confirmed' => $confirmedBookings,
             'checked_in' => $checkedInBookings,
             'checked_out' => $checkedOutBookings,
@@ -131,10 +131,10 @@ class ReportController extends Controller
      */
     private function getOccupancyReport($hotelId, $startDate, $endDate)
     {
-        $totalRooms = Room::where('hotel_id', $hotelId)->sum('quantity');
+        $totalRooms = Room::where('hotel_id', $hotelId)->count();
         $occupiedRooms = Room::where('hotel_id', $hotelId)
             ->where('status', 'OCCUPIED')
-            ->sum('quantity');
+            ->count();
 
         $availableRooms = $totalRooms - $occupiedRooms;
         $occupancyRate = $totalRooms > 0 ? round(($occupiedRooms / $totalRooms) * 100, 2) : 0;
@@ -168,6 +168,7 @@ class ReportController extends Controller
             'total_rooms' => $totalRooms,
             'occupied_rooms' => $occupiedRooms,
             'available_rooms' => $availableRooms,
+            'occupancy_rate' => $averageOccupancyRate,
             'current_occupancy_rate' => $occupancyRate,
             'average_occupancy_rate' => $averageOccupancyRate,
             'total_room_nights' => $totalRoomNights,

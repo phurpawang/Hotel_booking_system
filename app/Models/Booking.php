@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\ManagesNotifications;
 use Carbon\Carbon;
 
 class Booking extends Model
 {
-    use HasFactory;
+    use HasFactory, ManagesNotifications;
 
     protected $fillable = [
         'booking_id',
@@ -27,6 +28,9 @@ class Booking extends Model
         'num_rooms',
         'total_price',
         'base_price',
+        'original_price',
+        'discount_applied',
+        'promotion_id',
         'commission_amount',
         'payment_status',
         'payment_method',
@@ -47,6 +51,8 @@ class Booking extends Model
         'actual_check_out' => 'datetime',
         'total_price' => 'decimal:2',
         'base_price' => 'decimal:2',
+        'original_price' => 'decimal:2',
+        'discount_applied' => 'decimal:2',
         'commission_amount' => 'decimal:2',
         'refund_amount' => 'decimal:2',
         'cancelled_at' => 'datetime',
@@ -98,6 +104,22 @@ class Booking extends Model
     public function commission()
     {
         return $this->hasOne(BookingCommission::class);
+    }
+
+    /**
+     * Get the promotion applied to this booking
+     */
+    public function promotion()
+    {
+        return $this->belongsTo(Promotion::class);
+    }
+
+    /**
+     * Get the review for this booking
+     */
+    public function review()
+    {
+        return $this->hasOne(Review::class);
     }
 
     /**

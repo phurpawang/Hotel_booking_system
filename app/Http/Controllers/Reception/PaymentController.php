@@ -78,12 +78,17 @@ class PaymentController extends Controller
     {
         $user = Auth::user();
         
-        // Get bookings that need payment
+        // Get bookings that need payment with their relationships
         $bookings = Booking::where('hotel_id', $user->hotel_id)
             ->whereIn(DB::raw('UPPER(status)'), ['CONFIRMED', 'CHECKED_IN', 'CHECKED_OUT'])
             ->with('user', 'room')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->get()
+            ->filter(function ($booking) {
+                // Only include bookings with valid user and room relationships
+                return $booking->user && $booking->room;
+            })
+            ->values(); // Reset array keys
 
         return view('reception.payments.create', compact('bookings'));
     }

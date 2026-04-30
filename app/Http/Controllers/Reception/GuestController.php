@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Reception;
 use App\Http\Controllers\Controller;
 use App\Models\Guest;
 use App\Models\Booking;
+use App\Rules\BhutanPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -92,8 +93,8 @@ class GuestController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:guests,email',
-            'phone' => 'nullable|string|max:20',
-            'mobile' => 'nullable|string|max:20',
+            'phone' => ['nullable', new BhutanPhoneNumber()],
+            'mobile' => ['nullable', new BhutanPhoneNumber()],
             'address' => 'nullable|string|max:500',
         ]);
 
@@ -135,8 +136,8 @@ class GuestController extends Controller
                 'email',
                 Rule::unique('guests')->ignore($guest->id)
             ],
-            'phone' => 'nullable|string|max:20',
-            'mobile' => 'nullable|string|max:20',
+            'phone' => ['nullable', new BhutanPhoneNumber()],
+            'mobile' => ['nullable', new BhutanPhoneNumber()],
             'address' => 'nullable|string|max:500',
         ]);
 

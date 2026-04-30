@@ -42,10 +42,10 @@ class ReceptionistDashboardController extends Controller
                                    ->count();
 
         // Room statistics (using sum of quantities)
-        $totalRooms = Room::where('hotel_id', $user->hotel_id)->sum('quantity');
+        $totalRooms = Room::where('hotel_id', $user->hotel_id)->count();
         $occupiedRooms = Room::where('hotel_id', $user->hotel_id)
                             ->where(DB::raw('UPPER(status)'), 'OCCUPIED')
-                            ->sum('quantity');
+                            ->count();
         $availableRooms = $totalRooms - $occupiedRooms;
 
         // Payment status counts (for receptionist to track)

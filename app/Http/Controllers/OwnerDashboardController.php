@@ -40,7 +40,7 @@ class OwnerDashboardController extends Controller
             abort(404, 'Hotel not found for this owner.');
         }
 
-        $totalRooms = Room::where('hotel_id', $hotel->id)->sum('quantity');
+        $totalRooms = Room::where('hotel_id', $hotel->id)->count();
         $totalBookings = Booking::where('hotel_id', $hotel->id)->count();
         $pendingBookings = Booking::where('hotel_id', $hotel->id)
                                   ->where(DB::raw('UPPER(status)'), 'CONFIRMED')
@@ -57,7 +57,7 @@ class OwnerDashboardController extends Controller
         
         $occupiedRooms = Room::where('hotel_id', $hotel->id)
                             ->where(DB::raw('UPPER(status)'), 'OCCUPIED')
-                            ->sum('quantity');
+                            ->count();
         $availableRooms = $totalRooms - $occupiedRooms;
         $occupancyRate = $totalRooms > 0 ? round(($occupiedRooms / $totalRooms) * 100) : 0;
         

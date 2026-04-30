@@ -12,13 +12,11 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-green-900 text-white flex-shrink-0">
             <div class="p-6 border-b border-green-800">
-                <a href="{{ route('manager.dashboard') }}" class="block">
-                    <h1 class="text-2xl font-bold hover:text-green-300 transition cursor-pointer">
-                        <i class="fas fa-building mr-2"></i>BHBS
-                    </h1>
+                <a href="{{ route('manager.dashboard') }}" class="flex flex-col items-center justify-center">
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS Logo" style="height: 55px; width: 55px; border-radius: 50%; object-fit: cover; margin-bottom: 0.75rem;">
+                    <h1 class="text-lg font-bold text-center">{{ $hotel->name ?? 'Hotel Name' }}</h1>
+                    <span class="text-xs bg-green-700 px-2 py-1 rounded mt-2 inline-block">Manager</span>
                 </a>
-                <p class="text-sm text-green-200 mt-1">{{ $hotel->name ?? 'Hotel Name' }}</p>
-                <span class="text-xs bg-green-700 px-2 py-1 rounded mt-2 inline-block">Manager</span>
             </div>
             
             <nav class="p-4">

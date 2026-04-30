@@ -12,9 +12,11 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-purple-900 text-white flex-shrink-0">
             <div class="p-6 border-b border-purple-800">
-                <h1 class="text-2xl font-bold">BHBS</h1>
-                <p class="text-sm text-purple-200 mt-1">{{ Auth::user()->hotel->name ?? 'Hotel Name' }}</p>
-                <span class="text-xs bg-purple-700 px-2 py-1 rounded mt-2 inline-block">Receptionist</span>
+                <a href="{{ route('reception.dashboard') }}" class="flex flex-col items-center justify-center">
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 55px; width: 55px; border-radius: 50%; object-fit: cover; margin-bottom: 0.75rem;">
+                    <h1 class="text-lg font-bold text-center">{{ Auth::user()->hotel->name ?? 'Hotel Name' }}</h1>
+                    <span class="text-xs text-purple-200 mt-1">Receptionist</span>
+                </a>
             </div>
             
             <nav class="p-4">

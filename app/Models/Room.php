@@ -72,6 +72,31 @@ class Room extends Model
     }
 
     /**
+     * Scope to filter by room type
+     */
+    public function scopeByRoomType($query, $roomType)
+    {
+        return $query->where('room_type', $roomType);
+    }
+
+    /**
+     * Scope to filter by price
+     */
+    public function scopeByPrice($query, $price)
+    {
+        return $query->where('price_per_night', $price);
+    }
+
+    /**
+     * Scope to filter by room type and price (inventory item)
+     */
+    public function scopeByInventoryItem($query, $roomType, $price)
+    {
+        return $query->where('room_type', $roomType)
+                     ->where('price_per_night', $price);
+    }
+
+    /**
      * Check if room is available for dates
      */
     public function isAvailableForDates($checkIn, $checkOut)

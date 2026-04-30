@@ -32,9 +32,11 @@ return new class extends Migration
             ->where('role', 'OWNER')
             ->update(['password' => Hash::make('Tedday@678')]);
         
-        // Remove PIN column
+        // Remove PIN column if it exists
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('pin');
+            if (Schema::hasColumn('users', 'pin')) {
+                $table->dropColumn('pin');
+            }
         });
     }
 

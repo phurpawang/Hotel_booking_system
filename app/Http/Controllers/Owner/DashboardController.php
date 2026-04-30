@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\BookingCommission;
 use App\Models\HotelPayout;
 use App\Models\HotelDeregistrationRequest;
+use App\Models\HotelInquiry;
 use App\Services\CommissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -48,10 +49,10 @@ class DashboardController extends Controller
             ->where('status', 'CHECKED_IN')
             ->count();
         
-        $totalRooms = Room::where('hotel_id', $hotel->id)->sum('quantity');
+        $totalRooms = Room::where('hotel_id', $hotel->id)->count();
         $availableRooms = Room::where('hotel_id', $hotel->id)
             ->where('status', 'AVAILABLE')
-            ->sum('quantity');
+            ->count();
         
         // Get monthly revenue and commission data
         $currentMonth = Carbon::now();
@@ -61,10 +62,10 @@ class DashboardController extends Controller
             ->whereYear('created_at', $currentMonth->year)
             ->sum('amount');
 
-        // Commission statistics for current month
+        // Commission statistics for current month (filter by booking_date, not created_at)
         $monthlyCommissions = BookingCommission::where('hotel_id', $hotel->id)
-            ->whereYear('created_at', $currentMonth->year)
-            ->whereMonth('created_at', $currentMonth->month)
+            ->whereYear('booking_date', $currentMonth->year)
+            ->whereMonth('booking_date', $currentMonth->month)
             ->get();
 
         $monthlyCommissionTotal = $monthlyCommissions->sum('commission_amount');
@@ -105,10 +106,10 @@ class DashboardController extends Controller
                 ->whereMonth('created_at', $date->month)
                 ->sum('amount');
 
-            // Commission data for the month
+            // Commission data for the month (filter by booking_date)
             $monthCommissions = BookingCommission::where('hotel_id', $hotel->id)
-                ->whereYear('created_at', $date->year)
-                ->whereMonth('created_at', $date->month)
+                ->whereYear('booking_date', $date->year)
+                ->whereMonth('booking_date', $date->month)
                 ->get();
             
             $commissionData[] = $monthCommissions->sum('commission_amount');
@@ -151,6 +152,18 @@ class DashboardController extends Controller
             ->where('status', 'PENDING')
             ->first();
 
+        // Inquiry Statistics
+        $totalInquiries = HotelInquiry::where('hotel_id', $hotel->id)->count();
+        $pendingInquiries = HotelInquiry::where('hotel_id', $hotel->id)->where('status', 'PENDING')->count();
+        $answeredInquiries = HotelInquiry::where('hotel_id', $hotel->id)->where('status', 'ANSWERED')->count();
+        $closedInquiries = HotelInquiry::where('hotel_id', $hotel->id)->where('status', 'CLOSED')->count();
+
+        // Recent guest inquiries
+        $recentInquiries = HotelInquiry::where('hotel_id', $hotel->id)
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('owner.dashboard', compact(
             'hotel',
             'totalReservations',
@@ -170,7 +183,12 @@ class DashboardController extends Controller
             'commissionTrends',
             'recentBookings',
             'recentPayouts',
-            'deregistrationRequest'
+            'deregistrationRequest',
+            'totalInquiries',
+            'pendingInquiries',
+            'answeredInquiries',
+            'closedInquiries',
+            'recentInquiries'
         ));
     }
 }

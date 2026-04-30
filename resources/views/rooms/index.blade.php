@@ -1,150 +1,141 @@
-@extends('layouts.dashboard-bootstrap')
+@extends(
+    strtoupper(Auth::user()->role) === 'MANAGER' ? 'manager.layouts.app' :
+    (in_array(strtoupper(Auth::user()->role), ['RECEPTIONIST', 'RECEPTION']) ? 'reception.layouts.app' : 'layouts.owner-bootstrap')
+)
 
-@section('title', 'Rooms Management - ' . $hotel->name)
+@section('title', 'Rooms Management')
+
+@section('header')
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Rooms Management</h2>
+    <p class="text-gray-600 text-sm mt-1">{{ $hotel->name }}</p>
+@endsection
 
 @section('content')
-<div class="container-fluid py-4">
+<div style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
     
     <!-- Dashboard Header -->
-    <div class="dashboard-header mb-4">
-        <div class="d-flex justify-content-between align-items-center">
+    <div class="dashboard-header mb-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 15px; color: white; box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3); position: relative; z-index: 5;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
             <div>
-                <h2 class="mb-2"><i class="bi bi-door-closed-fill me-2"></i>Rooms Management</h2>
-                <p class="text-muted mb-0">{{ $hotel->name }}</p>
+                <h2 style="margin: 0; font-size: 1.8rem; font-weight: 700; color: white;"><i class="bi bi-door-closed-fill me-2"></i>Rooms Management</h2>
+                <p style="margin: 0.5rem 0 0; font-size: 0.9rem; opacity: 0.95; color: white;">{{ $hotel->name }}</p>
             </div>
             @if(in_array(strtoupper(Auth::user()->role), ['OWNER', 'MANAGER']))
-            <div>
-                <a href="{{ route(strtolower(Auth::user()->role) . '.rooms.create') }}" class="btn btn-gradient-primary btn-lg">
-                    <i class="bi bi-plus-circle me-2"></i>Add New Room
-                </a>
-            </div>
+            <button type="button" 
+                    onclick='window.location.href="{{ route(strtolower(Auth::user()->role) . ".rooms.create") }}"'
+                    style="background: white; color: #667eea; font-weight: 700; border-radius: 10px; padding: 0.6rem 1.5rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: all 0.3s ease; cursor: pointer; border: none; line-height: 1.5;"
+                    onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'; this.style.transform='translateY(-2px)';"
+                    onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'; this.style.transform='translateY(0)';">
+                <i class="bi bi-plus-circle-fill"></i>Add New Room
+            </button>
             @endif
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row g-4 mb-4">
+    <!-- Statistics Cards - Smaller -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
         <!-- Total Rooms -->
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                <div class="stat-icon">
-                    <i class="bi bi-door-closed-fill"></i>
-                </div>
-                <div class="stat-details">
-                    <h3 class="stat-value">{{ $stats['total'] }}</h3>
-                    <p class="stat-label">Total Rooms</p>
-                </div>
-            </div>
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.2rem; border-radius: 12px; color: white; box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2); transition: all 0.3s ease;">
+            <div style="font-size: 1.8rem; margin-bottom: 0.5rem;"><i class="bi bi-door-closed-fill"></i></div>
+            <h3 style="font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: white;">{{ $stats['total'] }}</h3>
+            <p style="font-size: 0.85rem; margin: 0; opacity: 0.95;">Total Rooms</p>
         </div>
 
         <!-- Available Rooms -->
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-                <div class="stat-icon">
-                    <i class="bi bi-check-circle-fill"></i>
-                </div>
-                <div class="stat-details">
-                    <h3 class="stat-value">{{ $stats['available'] }}</h3>
-                    <p class="stat-label">Available</p>
-                </div>
-            </div>
+        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 1.2rem; border-radius: 12px; color: white; box-shadow: 0 3px 10px rgba(17, 153, 142, 0.2); transition: all 0.3s ease;">
+            <div style="font-size: 1.8rem; margin-bottom: 0.5rem;"><i class="bi bi-check-circle-fill"></i></div>
+            <h3 style="font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: white;">{{ $stats['available'] }}</h3>
+            <p style="font-size: 0.85rem; margin: 0; opacity: 0.95;">Available</p>
         </div>
 
         <!-- Occupied Rooms -->
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                <div class="stat-icon">
-                    <i class="bi bi-person-fill-check"></i>
-                </div>
-                <div class="stat-details">
-                    <h3 class="stat-value">{{ $stats['occupied'] }}</h3>
-                    <p class="stat-label">Occupied</p>
-                </div>
-            </div>
+        <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 1.2rem; border-radius: 12px; color: white; box-shadow: 0 3px 10px rgba(240, 147, 251, 0.2); transition: all 0.3s ease;">
+            <div style="font-size: 1.8rem; margin-bottom: 0.5rem;"><i class="bi bi-person-fill-check"></i></div>
+            <h3 style="font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: white;">{{ $stats['occupied'] }}</h3>
+            <p style="font-size: 0.85rem; margin: 0; opacity: 0.95;">Occupied</p>
         </div>
 
         <!-- Maintenance -->
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card" style="background: linear-gradient(135deg, #ffa751 0%, #ffe259 100%);">
-                <div class="stat-icon">
-                    <i class="bi bi-tools"></i>
-                </div>
-                <div class="stat-details">
-                    <h3 class="stat-value">{{ $stats['maintenance'] }}</h3>
-                    <p class="stat-label">Maintenance</p>
-                </div>
-            </div>
+        <div style="background: linear-gradient(135deg, #ffa751 0%, #ffe259 100%); padding: 1.2rem; border-radius: 12px; color: white; box-shadow: 0 3px 10px rgba(255, 167, 81, 0.2); transition: all 0.3s ease;">
+            <div style="font-size: 1.8rem; margin-bottom: 0.5rem;"><i class="bi bi-tools"></i></div>
+            <h3 style="font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: white;">{{ $stats['maintenance'] }}</h3>
+            <p style="font-size: 0.85rem; margin: 0; opacity: 0.95;">Maintenance</p>
         </div>
     </div>
 
     <!-- Filters Section -->
-    <div class="card filter-card mb-4">
-        <div class="card-body">
-            <h5 class="card-title mb-4" style="color: #667eea;">
-                <i class="bi bi-funnel-fill me-2"></i>Filter Rooms
-            </h5>
-            <form method="GET" action="{{ route(strtolower(Auth::user()->role) . '.rooms.index') }}">
-                <div class="row g-3">
-                    <!-- Search -->
-                    <div class="col-md-4">
-                        <label class="form-label" style="color: #667eea; font-weight: 600;">
-                            <i class="bi bi-search me-1"></i>Search Room Number
-                        </label>
-                        <input type="text" 
-                               name="search" 
-                               class="form-control form-control-lg" 
-                               placeholder="Enter room number..." 
-                               value="{{ request('search') }}">
-                    </div>
-                    
-                    <!-- Status Filter -->
-                    <div class="col-md-4">
-                        <label class="form-label" style="color: #667eea; font-weight: 600;">
-                            <i class="bi bi-bookmark-fill me-1"></i>Status
-                        </label>
-                        <select name="status" class="form-select form-select-lg">
-                            <option value="">All Statuses</option>
-                            <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
-                            <option value="occupied" {{ request('status') == 'occupied' ? 'selected' : '' }}>Occupied</option>
-                            <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Room Type Filter -->
-                    <div class="col-md-4">
-                        <label class="form-label" style="color: #667eea; font-weight: 600;">
-                            <i class="bi bi-grid-3x3-gap-fill me-1"></i>Room Type
-                        </label>
-                        <input type="text" 
-                               name="room_type" 
-                               class="form-control form-control-lg" 
-                               placeholder="e.g., Single, Double..." 
-                               value="{{ request('room_type') }}">
-                    </div>
-                    
-                    <!-- Filter Buttons -->
-                    <div class="col-12">
-                        <button type="submit" class="btn btn-gradient-primary btn-lg me-2">
-                            <i class="bi bi-search me-2"></i>Apply Filters
-                        </button>
-                        <a href="{{ route(strtolower(Auth::user()->role) . '.rooms.index') }}" class="btn btn-outline-secondary btn-lg">
-                            <i class="bi bi-arrow-clockwise me-2"></i>Reset
-                        </a>
-                    </div>
+    <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 3px 10px rgba(0,0,0,0.08); border-left: 4px solid #667eea;">
+        <h5 style="color: #667eea; font-weight: 700; margin-bottom: 1.5rem; font-size: 1rem;">
+            <i class="bi bi-funnel-fill me-2"></i>Filter Rooms
+        </h5>
+        <form method="GET" action="{{ route(strtolower(Auth::user()->role) . '.rooms.index') }}">
+            <div style="display: flex; align-items: flex-end; gap: 1rem; flex-wrap: wrap;">
+                <!-- Search -->
+                <div style="flex: 1 1 200px; min-width: 200px;">
+                    <label style="color: #667eea; font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <i class="bi bi-search me-1"></i>Search Room Number
+                    </label>
+                    <input type="text" 
+                           name="search" 
+                           class="form-control" 
+                           placeholder="Enter room number..." 
+                           value="{{ request('search') }}"
+                           style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 0.6rem; transition: all 0.3s ease;">
                 </div>
-            </form>
-        </div>
+                
+                <!-- Status Filter -->
+                <div style="flex: 1 1 150px; min-width: 150px;">
+                    <label style="color: #667eea; font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <i class="bi bi-bookmark-fill me-1"></i>Status
+                    </label>
+                    <select name="status" 
+                            class="form-control"
+                            style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 0.6rem; transition: all 0.3s ease;">
+                        <option value="">All Statuses</option>
+                        <option value="available" {{ request('status') == 'available' ? 'selected' : '' }}>Available</option>
+                        <option value="occupied" {{ request('status') == 'occupied' ? 'selected' : '' }}>Occupied</option>
+                        <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
+                    </select>
+                </div>
+                
+                <!-- Room Type Filter -->
+                <div style="flex: 1 1 200px; min-width: 200px;">
+                    <label style="color: #667eea; font-weight: 600; display: block; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <i class="bi bi-grid-3x3-gap-fill me-1"></i>Room Type
+                    </label>
+                    <input type="text" 
+                           name="room_type" 
+                           class="form-control" 
+                           placeholder="e.g., Single, Double..." 
+                           value="{{ request('room_type') }}"
+                           style="border: 2px solid #e0e0e0; border-radius: 8px; padding: 0.6rem; transition: all 0.3s ease;">
+                </div>
+                
+                <!-- Filter Buttons -->
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="submit" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.6rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-search"></i>Apply
+                    </button>
+                    <a href="{{ route(strtolower(Auth::user()->role) . '.rooms.index') }}" style="background: #f5f5f5; color: #667eea; border: 2px solid #e0e0e0; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; text-decoration: none; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 0.5rem;">
+                        <i class="bi bi-arrow-clockwise"></i>Reset
+                    </a>
+                </div>
+            </div>
+        </form>
     </div>
 
     <!-- Rooms Table -->
-    <div class="card table-card">
-        <div class="card-header">
-            <h5 class="mb-0" style="color: #667eea; font-weight: 600;">
+    <div style="background: white; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); overflow: hidden;">
+        <!-- Table Header -->
+        <div style="padding: 1.5rem; border-bottom: 2px solid #f0f0f0; background: #fafafa;">
+            <h5 style="margin: 0; color: #667eea; font-weight: 700; font-size: 1.1rem;">
                 <i class="bi bi-list-ul me-2"></i>All Rooms
-                <span class="badge ms-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 0.6rem 1.2rem; border-radius: 25px; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);">{{ $rooms->total() }}</span>
+                <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.85rem; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3); margin-left: 0.5rem;">{{ $rooms->total() }}</span>
             </h5>
         </div>
-        <div class="card-body p-0">
+        
+        <!-- Table Body -->
+        <div style="overflow-x: auto;">
             @if($rooms->count() > 0)
             <div class="table-responsive">
                 <table class="table table-hover mb-0">
@@ -229,7 +220,7 @@
                                     @if(strtoupper(Auth::user()->role) == 'OWNER')
                                     <button type="button" 
                                             class="btn btn-sm btn-outline-danger"
-                                            onclick="confirmDelete({{ $room->id }})"
+                                            onclick="confirmDelete('{{ $room->id }}')"
                                             title="Delete Room">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
@@ -253,25 +244,25 @@
             </div>
             
             <!-- Pagination -->
-            <div class="card-footer bg-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div class="text-muted">
-                        Showing {{ $rooms->firstItem() ?? 0 }} to {{ $rooms->lastItem() ?? 0 }} of {{ $rooms->total() }} rooms
-                    </div>
-                    <div>
-                        {{ $rooms->links() }}
-                    </div>
+            <div style="padding: 1.5rem; border-top: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; background: #fafafa;">
+                <div style="font-size: 0.9rem; color: #666;">
+                    Showing {{ $rooms->firstItem() ?? 0 }} to {{ $rooms->lastItem() ?? 0 }} of {{ $rooms->total() }} rooms
+                </div>
+                <div>
+                    {{ $rooms->links() }}
                 </div>
             </div>
             @else
-            <div class="text-center py-5">
-                <i class="bi bi-inbox display-1 text-muted mb-3 d-block"></i>
-                <h5 class="text-muted">No rooms found</h5>
-                <p class="text-muted">Try adjusting your filters or add a new room.</p>
+            <div style="padding: 3rem 2rem; text-align: center;">
+                <div style="font-size: 3rem; color: #ddd; margin-bottom: 1rem;"><i class="bi bi-inbox"></i></div>
+                <h5 style="color: #999; margin-bottom: 0.5rem;">No rooms found</h5>
+                <p style="color: #bbb; margin: 0;">Try adjusting your filters or add a new room.</p>
                 @if(in_array(strtoupper(Auth::user()->role), ['OWNER', 'MANAGER']))
-                <a href="{{ route(strtolower(Auth::user()->role) . '.rooms.create') }}" class="btn btn-gradient-primary mt-3">
-                    <i class="bi bi-plus-circle me-2"></i>Add First Room
-                </a>
+                <button type="button"
+                        onclick='window.location.href="{{ route(strtolower(Auth::user()->role) . ".rooms.create") }}"'
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.7rem 1.5rem; border-radius: 8px; font-weight: 600; text-decoration: none; display: inline-block; margin-top: 1rem; cursor: pointer; transition: all 0.3s ease; line-height: 1.5;">
+                    <i class="bi bi-plus-circle me-1"></i>Add First Room
+                </button>
                 @endif
             </div>
             @endif
@@ -282,11 +273,6 @@
 
 <style>
     /* Enhanced Styles - Same as Bookings Dashboard */
-    body {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        min-height: 100vh;
-    }
-
     .dashboard-header {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         padding: 2.5rem;
@@ -454,6 +440,33 @@
         transform: translateY(-3px);
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
         color: white;
+    }
+
+    /* Add New Room Button Styling */
+    button[onclick*="rooms/create"] {
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        user-select: none;
+        position: relative;
+        z-index: 10;
+    }
+
+    button[onclick*="rooms/create"]:hover {
+        opacity: 0.95 !important;
+    }
+
+    button[onclick*="rooms/create"]:active {
+        transform: scale(0.98) !important;
+    }
+
+    a[href*="rooms/create"] {
+        cursor: pointer !important;
+        pointer-events: auto !important;
+        user-select: none;
+    }
+
+    a[href*="rooms/create"]:hover {
+        opacity: 0.95;
     }
 
     .btn-outline-secondary {

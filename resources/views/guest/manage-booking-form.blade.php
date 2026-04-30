@@ -12,13 +12,28 @@
     <header class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold">Manage Your Booking</h1>
+                <div class="flex items-center gap-3">
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 45px; width: 45px; border-radius: 50%; object-fit: cover;">
+                    <h1 class="text-2xl font-bold">Manage Your Booking</h1>
+                </div>
                 <a href="{{ route('home') }}" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition">
                     <i class="fas fa-home mr-2"></i> Back to Home
                 </a>
             </div>
         </div>
     </header>
+
+    <!-- Reusable Search Bar -->
+    @include('components.search-bar', [
+        'dzongkhags' => \App\Models\Dzongkhag::all(),
+        'sticky' => true,
+        'check_in' => request('check_in'),
+        'check_out' => request('check_out'),
+        'adults' => request('adults', 1),
+        'children' => request('children', 0),
+        'rooms' => request('rooms', 1),
+        'dzongkhag_id' => request('dzongkhag_id')
+    ])
 
     <div class="container mx-auto px-4 py-12">
         <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8">

@@ -1,6 +1,14 @@
-@extends('layouts.dashboard-bootstrap')
+@extends(
+    strtoupper(Auth::user()->role) === 'MANAGER' ? 'manager.layouts.app' :
+    (in_array(strtoupper(Auth::user()->role), ['RECEPTIONIST', 'RECEPTION']) ? 'reception.layouts.app' : 'layouts.owner-bootstrap')
+)
 
-@section('title', 'Room Details - ' . $room->room_number)
+@section('title', 'Room Details')
+
+@section('header')
+    <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Room Details</h2>
+    <p class="text-gray-600 text-sm mt-1">{{ $room->room_number }}</p>
+@endsection
 
 @section('content')
 <div class="container-fluid py-4">

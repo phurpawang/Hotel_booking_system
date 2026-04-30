@@ -32,11 +32,11 @@ class RoomStatusController extends Controller
 
         // Calculate statistics (using sum of quantities)
         $stats = [
-            'total' => $rooms->sum('quantity'),
-            'available' => $rooms->where('status', 'AVAILABLE')->sum('quantity'),
-            'occupied' => $rooms->where('status', 'OCCUPIED')->sum('quantity'),
-            'cleaning' => $rooms->where('status', 'CLEANING')->sum('quantity'),
-            'maintenance' => $rooms->where('status', 'MAINTENANCE')->sum('quantity'),
+            'total' => $rooms->count(),
+            'available' => $rooms->where('status', 'AVAILABLE')->count(),
+            'occupied' => $rooms->where('status', 'OCCUPIED')->count(),
+            'cleaning' => $rooms->where('status', 'CLEANING')->count(),
+            'maintenance' => $rooms->where('status', 'MAINTENANCE')->count(),
         ];
 
         return view('reception.room-status.index', compact('rooms', 'stats', 'hotel'));

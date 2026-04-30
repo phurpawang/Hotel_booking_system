@@ -1,12 +1,10 @@
 <aside class="w-64 bg-purple-900 text-white flex-shrink-0">
     <div class="p-4 border-b border-purple-800">
-        <a href="{{ route('reception.dashboard') }}" class="block">
-            <h1 class="text-2xl font-bold hover:text-purple-300 transition cursor-pointer">
-                <i class="fas fa-building mr-2"></i>BHBS
-            </h1>
+        <a href="{{ route('reception.dashboard') }}" class="block text-center">
+            <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 60px; width: 60px; border-radius: 50%; object-fit: cover; margin: 0 auto 8px;">
+            <p class="text-sm text-purple-200">{{ Auth::user()->hotel->name ?? 'Hotel Name' }}</p>
+            <span class="text-xs bg-purple-700 px-2 py-1 rounded mt-2 inline-block">Receptionist</span>
         </a>
-        <p class="text-sm text-purple-200 mt-1">{{ Auth::user()->hotel->name ?? 'Hotel Name' }}</p>
-        <span class="text-xs bg-purple-700 px-2 py-1 rounded mt-2 inline-block">Receptionist</span>
     </div>
     
     <nav class="p-3">
@@ -18,11 +16,14 @@
             <i class="fas fa-calendar-check mr-3"></i>
             <span>Bookings</span>
         </a>
+        <a href="{{ route('reception.rooms.index') }}" class="flex items-center px-3 py-2 {{ ($active ?? '') == 'rooms' ? 'bg-purple-800' : 'hover:bg-purple-800' }} rounded-lg mb-1 transition">
+            <i class="fas fa-bed mr-3"></i>
+            <span>Rooms</span>
+        </a>
         <a href="{{ route('reception.guests.index') }}" class="flex items-center px-3 py-2 {{ ($active ?? '') == 'guests' ? 'bg-purple-800' : 'hover:bg-purple-800' }} rounded-lg mb-1 transition">
             <i class="fas fa-users mr-3"></i>
             <span>Guests</span>
         </a>
-        <!-- Room Status removed - Manager only feature -->
         <a href="{{ route('reception.payments.index') }}" class="flex items-center px-3 py-2 {{ ($active ?? '') == 'payments' ? 'bg-purple-800' : 'hover:bg-purple-800' }} rounded-lg mb-1 transition">
             <i class="fas fa-credit-card mr-3"></i>
             <span>Payments</span>

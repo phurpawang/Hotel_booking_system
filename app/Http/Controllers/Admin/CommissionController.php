@@ -173,4 +173,51 @@ class CommissionController extends Controller
 
         return view('admin.commissions.hotel-report', compact('hotels', 'year', 'month'));
     }
+
+    /**
+     * Show form to mark offline commission as received
+     */
+    public function offlineCommissionForm($payoutId)
+    {
+        $payout = HotelPayout::with('hotel')->findOrFail($payoutId);
+
+        if ($payout->offline_payment_amount <= 0) {
+            return redirect()->back()
+                ->with('error', 'This payout has no offline payments.');
+        }
+
+        if ($payout->offline_commission_status === 'received') {
+            return redirect()->back()
+                ->with('error', 'Offline commission has already been marked as received.');
+        }
+
+        return view('admin.commissions.offline-commission-form', compact('payout'));
+    }
+
+    /**
+     * Mark offline commission as received
+     */
+    public function markOfflineCommissionAsReceived(Request $request, $payoutId)
+    {
+        $request->validate([
+            'offline_commission_reference' => 'required|string|max:255',
+            'payout_notes' => 'nullable|string|max:1000',
+        ]);
+
+        $payout = HotelPayout::findOrFail($payoutId);
+
+        if ($payout->offline_commission_status === 'received') {
+            return redirect()->back()
+                ->with('error', 'Offline commission has already been marked as received.');
+        }
+
+        $payout->markOfflineCommissionAsReceived(
+            Auth::id(),
+            $request->offline_commission_reference,
+            $request->payout_notes
+        );
+
+        return redirect()->route('admin.commissions.show', $payout->id)
+            ->with('success', 'Offline commission marked as received successfully.');
+    }
 }

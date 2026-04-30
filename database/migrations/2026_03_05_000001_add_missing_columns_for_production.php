@@ -37,7 +37,11 @@ return new class extends Migration
         // Add logo column to hotels table if not exists
         Schema::table('hotels', function (Blueprint $table) {
             if (!Schema::hasColumn('hotels', 'logo')) {
-                $table->string('logo')->nullable()->after('property_image');
+                if (Schema::hasColumn('hotels', 'property_image')) {
+                    $table->string('logo')->nullable()->after('property_image');
+                } else {
+                    $table->string('logo')->nullable();
+                }
             }
             if (!Schema::hasColumn('hotels', 'owner_id')) {
                 $table->foreignId('owner_id')->nullable()->after('id')->constrained('users')->onDelete('cascade');

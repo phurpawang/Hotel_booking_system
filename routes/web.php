@@ -5,25 +5,28 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuestBookingController;
+use App\Http\Controllers\GuestInquiryController;
+use App\Http\Controllers\GuestReviewController;
 use App\Http\Controllers\HotelRegistrationController;
 use App\Http\Controllers\AuthController;  // Changed from HotelAuthController
-use App\Http\Controllers\HotelDashboardController;
 use App\Http\Controllers\OwnerDashboardController;
 use App\Http\Controllers\ManagerDashboardController;
 use App\Http\Controllers\ReceptionistDashboardController;
 use App\Http\Controllers\HotelDeregistrationController;
-use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AdminAuthController;
-use App\Http\Controllers\AdminHotelController;
-use App\Http\Controllers\AdminReservationController;
-use App\Http\Controllers\AdminPaymentController;
-use App\Http\Controllers\AdminUserController;
-use App\Http\Controllers\AdminReportController;
-use App\Http\Controllers\AdminSettingsController;
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminHotelController;
+use App\Http\Controllers\Admin\AdminReservationController;
+use App\Http\Controllers\Admin\AdminPaymentController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminReportController;
+use App\Http\Controllers\Admin\AdminSettingsController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,6 +71,8 @@ Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function ()
     Route::post('/commissions/generate', [App\Http\Controllers\Admin\CommissionController::class, 'generatePayouts'])->name('commissions.generate');
     Route::get('/commissions/{payout}/payout', [App\Http\Controllers\Admin\CommissionController::class, 'payoutForm'])->name('commissions.payout-form');
     Route::post('/commissions/{payout}/mark-paid', [App\Http\Controllers\Admin\CommissionController::class, 'markAsPaid'])->name('commissions.mark-paid');
+    Route::get('/commissions/{payout}/offline-commission', [App\Http\Controllers\Admin\CommissionController::class, 'offlineCommissionForm'])->name('commissions.offline-commission-form');
+    Route::post('/commissions/{payout}/offline-commission', [App\Http\Controllers\Admin\CommissionController::class, 'markOfflineCommissionAsReceived'])->name('commissions.mark-offline-commission');
     Route::get('/commissions-report/earnings', [App\Http\Controllers\Admin\CommissionController::class, 'earnings'])->name('commissions.earnings');
     Route::get('/commissions-report/hotels', [App\Http\Controllers\Admin\CommissionController::class, 'hotelReport'])->name('commissions.hotel-report');
     
@@ -81,6 +86,13 @@ Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function ()
     // Reports
     Route::get('/reports', [AdminReportController::class, 'index'])->name('reports');
     
+    // Reviews Management
+    Route::get('/reviews', [App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/{id}', [App\Http\Controllers\Admin\ReviewController::class, 'show'])->name('reviews.show');
+    Route::post('/reviews/{id}/status', [App\Http\Controllers\Admin\ReviewController::class, 'updateStatus'])->name('reviews.updateStatus');
+    Route::delete('/reviews/{id}', [App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('reviews.destroy');
+    Route::get('/reviews/statistics', [App\Http\Controllers\Admin\ReviewController::class, 'statistics'])->name('reviews.statistics');
+    
     // Settings
     Route::get('/settings', [AdminSettingsController::class, 'index'])->name('settings');
     Route::post('/settings', [AdminSettingsController::class, 'update'])->name('settings.update');
@@ -89,6 +101,14 @@ Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function ()
 // Guest Routes (Home & Booking)
 Route::get('/', [GuestBookingController::class, 'index'])->name('home');
 Route::get('/search', [GuestBookingController::class, 'search'])->name('guest.search');
+
+// ===== DATE PICKER TEST PAGE (TEMPORARY) =====
+Route::get('/test/date-picker', function () {
+    return view('example-date-picker');
+});
+
+// AJAX Filter API Route
+Route::post('/api/hotels/filter', [\App\Http\Controllers\HotelFilterController::class, 'applyFilters'])->name('api.hotels.filter');
 
 // Redirect default /login to hotel login
 Route::get('/login', function () {
@@ -117,6 +137,7 @@ Route::post('/hotel/check-status', [HotelRegistrationController::class, 'checkSt
 
 // Guest hotel viewing (must be after specific routes)
 Route::get('/hotel/{id}', [GuestBookingController::class, 'showHotel'])->name('guest.hotel');
+Route::post('/hotel/{id}/inquiry', [GuestInquiryController::class, 'store'])->name('guest.inquiry.store');
 
 Route::get('/booking/form', [GuestBookingController::class, 'showBookingForm'])->name('guest.booking.form');
 Route::post('/booking/confirm', [GuestBookingController::class, 'confirmBooking'])->name('guest.booking.confirm');
@@ -124,8 +145,12 @@ Route::get('/booking/confirmation/{booking_id}', [GuestBookingController::class,
 
 // Manage Booking (No Login Required)
 Route::get('/manage-booking', [GuestBookingController::class, 'showManageBookingForm'])->name('guest.manage-booking');
-Route::post('/manage-booking/view', [GuestBookingController::class, 'viewBooking'])->name('guest.booking.view');
+Route::match(['get', 'post'], '/manage-booking/view', [GuestBookingController::class, 'viewBooking'])->name('guest.booking.view');
 Route::post('/booking/{booking_id}/cancel', [GuestBookingController::class, 'cancelBooking'])->name('guest.booking.cancel');
+
+// Guest Reviews (No Login Required) - Unauthenticated
+Route::get('/booking/{booking_id}/review', [GuestBookingController::class, 'showReviewForm'])->name('guest.review.form');
+Route::post('/booking/review/submit', [GuestBookingController::class, 'submitReview'])->name('guest.review.submit');
 
 // ========== RESTRUCTURED OWNER/MANAGER/RECEPTIONIST DASHBOARD ROUTES ==========
 
@@ -137,9 +162,16 @@ Route::middleware(['auth', 'owner'])->prefix('owner')->name('owner.')->group(fun
     // Staff Management (Full CRUD)
     Route::resource('staff', App\Http\Controllers\Owner\StaffController::class);
     
-    // Reviews
-    Route::get('/reviews', [App\Http\Controllers\Owner\ReviewController::class, 'index'])->name('reviews.index');
-    Route::post('/reviews/{id}/reply', [App\Http\Controllers\Owner\ReviewController::class, 'reply'])->name('reviews.reply');
+    // Reviews Management
+    Route::get('/reviews', [App\Http\Controllers\Owner\ReviewManagementController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/{id}', [App\Http\Controllers\Owner\ReviewManagementController::class, 'show'])->name('reviews.show');
+    Route::post('/reviews/{id}/reply', [App\Http\Controllers\Owner\ReviewManagementController::class, 'reply'])->name('reviews.reply');
+    Route::delete('/reviews/{id}', [App\Http\Controllers\Owner\ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
+    
+    // Guest Inquiries/Questions
+    Route::resource('inquiries', App\Http\Controllers\Owner\InquiryController::class);
+    Route::post('/inquiries/{id}/answer', [App\Http\Controllers\Owner\InquiryController::class, 'answer'])->name('inquiries.answer');
+    Route::post('/inquiries/{id}/close', [App\Http\Controllers\Owner\InquiryController::class, 'close'])->name('inquiries.close');
     
     // Amenities (Full CRUD)
     Route::resource('amenities', App\Http\Controllers\Owner\AmenityController::class);
@@ -164,6 +196,9 @@ Route::middleware(['auth', 'owner'])->prefix('owner')->name('owner.')->group(fun
     Route::get('/notifications', [App\Http\Controllers\Owner\NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [App\Http\Controllers\Owner\NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [App\Http\Controllers\Owner\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    // AJAX Endpoints for real-time updates
+    Route::get('/notifications/ajax/unread-count', [App\Http\Controllers\Owner\NotificationController::class, 'getUnreadCount'])->name('notifications.ajax.unreadCount');
+    Route::get('/notifications/ajax/recent', [App\Http\Controllers\Owner\NotificationController::class, 'getRecent'])->name('notifications.ajax.recent');
     
     // Reservations (Full CRUD)
     Route::resource('reservations', ReservationController::class);
@@ -238,7 +273,10 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->name('manager.')->gro
     Route::get('/property/edit', [\App\Http\Controllers\Manager\PropertySettingsController::class, 'edit'])->name('property.edit');
     Route::put('/property/update', [\App\Http\Controllers\Manager\PropertySettingsController::class, 'update'])->name('property.update');
     
-    // Messages
+    // Guest Inquiries/Questions - SHARED WITH OWNER
+    Route::resource('inquiries', \App\Http\Controllers\Manager\InquiryController::class);
+    
+    // Messages (Legacy - kept for backward compatibility)
     Route::get('/messages', [\App\Http\Controllers\Manager\MessageController::class, 'index'])->name('messages.index');
     Route::patch('/messages/{id}/mark-as-read', [\App\Http\Controllers\Manager\MessageController::class, 'markAsRead'])->name('messages.markAsRead');
     Route::delete('/messages/{id}', [\App\Http\Controllers\Manager\MessageController::class, 'destroy'])->name('messages.destroy');
@@ -252,6 +290,20 @@ Route::middleware(['auth', 'manager'])->prefix('manager')->name('manager.')->gro
     Route::get('/room-status', [\App\Http\Controllers\Manager\RoomStatusController::class, 'index'])->name('room-status.index');
     Route::get('/room-status/{id}', [\App\Http\Controllers\Manager\RoomStatusController::class, 'show'])->name('room-status.show');
     Route::post('/room-status/{id}', [\App\Http\Controllers\Manager\RoomStatusController::class, 'updateStatus'])->name('room-status.update');
+    
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\Manager\NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\Manager\NotificationController::class, 'markAsRead'])->name('notifications.read');
+    Route::post('/notifications/read-all', [\App\Http\Controllers\Manager\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
+    // AJAX Endpoints for real-time updates
+    Route::get('/notifications/ajax/unread-count', [\App\Http\Controllers\Manager\NotificationController::class, 'getUnreadCount'])->name('notifications.ajax.unreadCount');
+    Route::get('/notifications/ajax/recent', [\App\Http\Controllers\Manager\NotificationController::class, 'getRecent'])->name('notifications.ajax.recent');
+    
+    // Guest Reviews Management
+    Route::get('/reviews', [\App\Http\Controllers\Manager\ReviewManagementController::class, 'index'])->name('reviews.index');
+    Route::get('/reviews/{id}', [\App\Http\Controllers\Manager\ReviewManagementController::class, 'show'])->name('reviews.show');
+    Route::post('/reviews/{id}/reply', [\App\Http\Controllers\Manager\ReviewManagementController::class, 'reply'])->name('reviews.reply');
+    Route::delete('/reviews/{id}', [\App\Http\Controllers\Manager\ReviewManagementController::class, 'destroy'])->name('reviews.destroy');
     
     // Legacy Routes
     Route::get('/bookings', [ManagerDashboardController::class, 'bookings'])->name('bookings');
@@ -311,6 +363,9 @@ Route::middleware(['auth', 'receptionist'])->prefix('reception')->name('receptio
     Route::post('/notifications/{id}/read', [\App\Http\Controllers\Reception\NotificationController::class, 'markAsRead'])->name('notifications.read');
     Route::post('/notifications/read-all', [\App\Http\Controllers\Reception\NotificationController::class, 'markAllAsRead'])->name('notifications.readAll');
     Route::delete('/notifications/{id}', [\App\Http\Controllers\Reception\NotificationController::class, 'destroy'])->name('notifications.destroy');
+    // AJAX Endpoints for real-time updates
+    Route::get('/notifications/ajax/unread-count', [\App\Http\Controllers\Reception\NotificationController::class, 'getUnreadCount'])->name('notifications.ajax.unreadCount');
+    Route::get('/notifications/ajax/recent', [\App\Http\Controllers\Reception\NotificationController::class, 'getRecent'])->name('notifications.ajax.recent');
     
     // Profile
     Route::get('/profile', [\App\Http\Controllers\Reception\ProfileController::class, 'index'])->name('profile.index');
@@ -374,35 +429,11 @@ Route::middleware(['auth'])->group(function () {
     */
 
     // ========== HOTEL OWNER/MANAGER/RECEPTION ROUTES ==========
-    // Note: Dashboard routes are now defined separately for each role (owner.dashboard, manager.dashboard, reception.dashboard)
-    
-    // Shared Hotel Staff Routes (All Roles)
-    Route::middleware(['hotel.role:OWNER,MANAGER,RECEPTION'])->prefix('hotel')->name('hotel.')->group(function () {
-        // Check-in/Check-out Actions
-        Route::post('/booking/{id}/check-in', [HotelDashboardController::class, 'checkIn'])->name('booking.checkin');
-        Route::post('/booking/{id}/check-out', [HotelDashboardController::class, 'checkOut'])->name('booking.checkout');
-        
-        // Room Availability
-        Route::post('/room/{id}/toggle-availability', [HotelDashboardController::class, 'updateRoomAvailability'])->name('room.toggle');
-        
-        // Room Management
-        Route::get('/rooms', [HotelDashboardController::class, 'manageRooms'])->name('manage-rooms');
-        Route::get('/rooms/add', [HotelDashboardController::class, 'showAddRoomForm'])->name('rooms.add');
-        Route::post('/rooms', [HotelDashboardController::class, 'storeRoom'])->name('rooms.store');
-        Route::put('/rooms/{id}', [HotelDashboardController::class, 'updateRoom'])->name('rooms.update');
-        
-        // Booking Management
-        Route::get('/bookings', [HotelDashboardController::class, 'viewBookings'])->name('bookings');
-        
-        // Deregistration
-        Route::get('/deregistration', [HotelDeregistrationController::class, 'showDeregistrationForm'])->name('deregistration');
-        Route::post('/deregistration', [HotelDeregistrationController::class, 'submitDeregistrationRequest'])->name('deregistration.submit');
-        Route::post('/deregistration/cancel', [HotelDeregistrationController::class, 'cancelDeregistrationRequest'])->name('deregistration.cancel');
-        
-        Route::get('/settings', function () {
-            return view('hotel.settings');
-        })->name('settings');
-    });
+    // Note: Dashboard routes are now defined separately for each role
+    // - Owner: /owner/dashboard, /owner/* routes
+    // - Manager: /manager/dashboard, /manager/* routes  
+    // - Reception: /reception/dashboard, /reception/* routes
+    // Legacy shared routes via HotelDashboardController have been removed
 
     // Legacy routes DISABLED - Using new restructured routes above
     /*
@@ -516,7 +547,7 @@ Route::get('/test-email', function () {
             'note' => 'Check storage/logs/laravel.log for detailed logs'
         ];
 
-        \Log::info('Test email sent successfully', $results);
+        Log::info('Test email sent successfully', $results);
 
         return response()->json($results);
 
@@ -533,7 +564,7 @@ Route::get('/test-email', function () {
             ]
         ];
 
-        \Log::error('Test email failed', $error);
+        Log::error('Test email failed', $error);
 
         return response()->json($error, 500);
     }

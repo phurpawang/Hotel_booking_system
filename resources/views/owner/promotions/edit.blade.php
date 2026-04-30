@@ -47,20 +47,39 @@
             </div>
 
             <div>
-                <label for="discount_percentage" class="block text-sm font-medium text-gray-700 mb-2">
-                    Discount Percentage <span class="text-red-500">*</span>
+                <label for="discount_type" class="block text-sm font-medium text-gray-700 mb-2">
+                    Discount Type <span class="text-red-500">*</span>
                 </label>
-                <input type="number" name="discount_percentage" id="discount_percentage" min="0" max="100" value="{{ old('discount_percentage', $promotion->discount_percentage) }}" required
+                <select name="discount_type" id="discount_type" required
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="">-- Select --</option>
+                    <option value="percentage" {{ old('discount_type', $promotion->discount_type) == 'percentage' ? 'selected' : '' }}>Percentage (%)</option>
+                    <option value="fixed" {{ old('discount_type', $promotion->discount_type) == 'fixed' ? 'selected' : '' }}>Fixed Amount (Nu.)</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="discount_value" class="block text-sm font-medium text-gray-700 mb-2">
+                    Discount Value <span class="text-red-500">*</span>
+                </label>
+                <input type="number" name="discount_value" id="discount_value" min="0" step="0.01" value="{{ old('discount_value', $promotion->discount_value) }}" required
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
             </div>
 
             <div>
-                <label for="applicable_room_types" class="block text-sm font-medium text-gray-700 mb-2">
-                    Applicable Room Types
+                <label for="room_type" class="block text-sm font-medium text-gray-700 mb-2">
+                    Apply to Room Type
                 </label>
-                <input type="text" name="applicable_room_types" id="applicable_room_types" value="{{ old('applicable_room_types', is_array($promotion->applicable_room_types) ? implode(', ', $promotion->applicable_room_types) : '') }}" placeholder="e.g., Deluxe, Suite"
+                <select name="room_type" id="room_type"
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
-                <p class="text-xs text-gray-500 mt-1">Comma-separated room types, or leave empty for all rooms</p>
+                    <option value="">-- All Room Types (Hotel-wide) --</option>
+                    @foreach($roomsGroupedByType as $roomType => $rooms)
+                    <option value="{{ $roomType }}" {{ old('room_type', $promotion->room_type) == $roomType ? 'selected' : '' }}>
+                        {{ $roomType }} ({{ count($rooms) }} room{{ count($rooms) > 1 ? 's' : '' }})
+                    </option>
+                    @endforeach
+                </select>
+                <p class="text-xs text-gray-500 mt-1">Leave empty to apply to all room types in your hotel</p>
             </div>
 
             <div>
@@ -99,4 +118,93 @@
         </div>
     </form>
 </div>
+
+<script>
+    // ========== FORM SUBMISSION SAFEGUARDS ==========
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        if (!form) return;
+
+        let formSubmitted = false;  // Flag to track if form is being submitted
+        
+        // Add invisible tracking input to detect if form was submitted
+        const trackingInput = document.createElement('input');
+        trackingInput.type = 'hidden';
+        trackingInput.name = 'submit_token';
+        trackingInput.value = Date.now() + Math.random();
+        form.appendChild(trackingInput);
+
+        // Main form submission handler
+        form.addEventListener('submit', function(e) {
+            // Debug: Log submission attempt
+            console.log('Form submission triggered at:', new Date().toISOString());
+
+            // If already submitted, prevent duplicate
+            if (formSubmitted) {
+                console.warn('Form submission prevented - already submitted');
+                e.preventDefault();
+                return false;
+            }
+
+            // Mark as submitted
+            formSubmitted = true;
+            console.log('Form marked as submitted');
+
+            // Disable all form inputs and buttons to prevent user interaction
+            const submitButton = form.querySelector('button[type="submit"]');
+            const inputs = form.querySelectorAll('input, textarea, select, button');
+
+            inputs.forEach(input => {
+                if (input !== submitButton) {
+                    input.disabled = true;
+                }
+            });
+
+            // Update submit button text and disable it
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.style.opacity = '0.6';
+                submitButton.style.cursor = 'not-allowed';
+                submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+                console.log('Submit button disabled');
+            }
+
+            // Add safeguard: if form hasn't submitted after 30 seconds, re-enable
+            const reenableTimeout = setTimeout(() => {
+                console.warn('Form submission timeout - re-enabling form');
+                formSubmitted = false;
+                inputs.forEach(input => {
+                    input.disabled = false;
+                });
+                if (submitButton) {
+                    submitButton.disabled = false;
+                    submitButton.style.opacity = '1';
+                    submitButton.style.cursor = 'pointer';
+                    submitButton.innerHTML = '<i class="fas fa-save mr-2"></i>Update Promotion';
+                }
+            }, 30000);
+
+            // Attach timeout ID to form for potential cleanup
+            form.submitting_timeout = reenableTimeout;
+
+            // Allow form to submit normally
+            console.log('Form submission allowed to proceed');
+            return true;
+        });
+
+        // Additional safeguard: Prevent form submission via Enter key in inputs
+        const inputs = form.querySelectorAll('input[type="text"], input[type="email"], textarea');
+        inputs.forEach(input => {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.ctrlKey) {
+                    e.preventDefault();
+                    console.log('Enter key in input prevented');
+                }
+            });
+        });
+
+        console.log('Form submission safeguards initialized');
+    });
+</script>
+
 @endsection

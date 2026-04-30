@@ -22,9 +22,17 @@
 </head>
 <body>
     <div class="container">
+        <!-- Back Button -->
+        <div class="mb-3 mt-5 pt-3">
+            <a href="{{ route('home') }}" class="btn btn-outline-light">
+                <i class="bi bi-arrow-left"></i> Back to Home
+            </a>
+        </div>
+
         <div class="login-card card">
             <div class="card-header bg-primary text-white text-center py-4">
-                <h3><i class="bi bi-building"></i> Hotel Login</h3>
+                <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 80px; width: 80px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px; background: rgba(255,255,255,0.1); padding: 5px;">
+                <h3>Hotel Login</h3>
                 <p class="mb-0">Bhutan Hotel Booking System</p>
             </div>
             <div class="card-body p-4">

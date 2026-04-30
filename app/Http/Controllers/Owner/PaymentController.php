@@ -23,13 +23,16 @@ class PaymentController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(20);
 
-        $totalRevenue = Payment::where('hotel_id', $hotel->id)
-            ->where('status', 'PAID')
-            ->sum('amount');
+        // Calculate total revenue from PAID bookings
+        $totalRevenue = Booking::where('hotel_id', $hotel->id)
+            ->where('payment_status', 'PAID')
+            ->sum('total_price');
 
-        $pendingPayments = Payment::where('hotel_id', $hotel->id)
-            ->where('status', 'PENDING')
-            ->sum('amount');
+        // Calculate pending payments from PENDING bookings (CONFIRMED or CHECKED_IN)
+        $pendingPayments = Booking::where('hotel_id', $hotel->id)
+            ->where('payment_status', 'PENDING')
+            ->whereIn('status', ['CONFIRMED', 'CHECKED_IN'])
+            ->sum('total_price');
 
         return view('owner.payments.index', compact('hotel', 'payments', 'totalRevenue', 'pendingPayments'));
     }

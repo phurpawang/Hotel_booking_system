@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Dzongkhag;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -12,11 +14,42 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // Create admin user
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@bhbs.com',
+            'password' => Hash::make('admin123'),
+            'role' => 'ADMIN',
+            'status' => 'active',
+            'mobile' => '17634567',
+        ]);
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Create dzongkhags (all 20 Bhutanese districts in alphabetical order)
+        $dzongkhags = [
+            'Bumthang',
+            'Chhukha',
+            'Dagana',
+            'Gasa',
+            'Haa',
+            'Lhuentse',
+            'Mongar',
+            'Paro',
+            'Pemagatshel',
+            'Punakha',
+            'Samdrup Jongkhar',
+            'Samtse',
+            'Sarpang',
+            'Thimphu',
+            'Trashigang',
+            'Trashiyangtse',
+            'Trongsa',
+            'Tsirang',
+            'Wangdue Phodrang',
+            'Zhemgang',
+        ];
+
+        foreach ($dzongkhags as $dzongkhag) {
+            Dzongkhag::firstOrCreate(['name' => $dzongkhag]);
+        }
     }
 }

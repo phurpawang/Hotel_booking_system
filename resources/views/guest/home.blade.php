@@ -6,64 +6,18 @@
     <title>Bhutan Hotel Booking System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Ensure date inputs are visible */
-        input[type="date"],
-        input[type="number"],
-        select {
-            color: #1f2937 !important;
-            background-color: white !important;
-        }
-        
-        input[type="date"]::-webkit-calendar-picker-indicator {
-            cursor: pointer;
-            opacity: 1;
-            filter: invert(0);
-        }
-        
-        /* Style for number input arrows */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            opacity: 1;
-        }
-        
-        /* Center text in number inputs */
-        input[type="number"] {
-            text-align: center;
-            font-weight: 600;
-        }
-        
-        /* Ensure select dropdown arrow is visible */
-        select {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-            background-position: right 0.5rem center;
-            background-repeat: no-repeat;
-            background-size: 1.5em 1.5em;
-            padding-right: 2.5rem;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-        }
-        
-        /* Remove number input spinners for cleaner look in guest inputs */
-        .guest-input::-webkit-inner-spin-button,
-        .guest-input::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        .guest-input {
-            -moz-appearance: textfield;
-        }
-    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
     <header class="bg-blue-600 text-white shadow-lg">
         <div class="container mx-auto px-4 py-4">
             <div class="flex justify-between items-center">
-                <div>
-                    <h1 class="text-2xl font-bold">Bhutan Hotel Booking System</h1>
-                    <p class="text-sm text-blue-100">Your Gateway to Bhutan's Hospitality</p>
+                <div class="flex items-center gap-3">
+                    <img src="{{ asset('images/bhbs-logo.png') }}" alt="BHBS" style="height: 50px; width: 50px; border-radius: 50%; object-fit: cover;">
+                    <div>
+                        <h1 class="text-2xl font-bold">Bhutan Hotel Booking System</h1>
+                        <p class="text-sm text-blue-100">Your Gateway to Bhutan's Hospitality</p>
+                    </div>
                 </div>
                 <nav class="flex gap-4">
                     <a href="{{ route('hotel.login') }}" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 transition">Hotel Login</a>
@@ -76,67 +30,86 @@
 
     <!-- Hero Section with Search -->
     <section class="bg-gradient-to-r from-blue-500 to-blue-700 text-white py-16">
+        <div class="text-center mb-8 container mx-auto px-4">
+            <h2 class="text-4xl font-bold mb-4">Find Your Perfect Stay in Bhutan</h2>
+            <p class="text-xl text-blue-100">Explore rated hotels across all Dzongkhags</p>
+        </div>
+
+        <!-- Reusable Search Bar Component -->
+        @include('components.search-bar', [
+            'dzongkhags' => $dzongkhags,
+            'sticky' => false,
+            'check_in' => request('check_in'),
+            'check_out' => request('check_out'),
+            'adults' => request('adults', 1),
+            'children' => request('children', 0),
+            'rooms' => request('rooms', 1),
+            'dzongkhag_id' => request('dzongkhag_id')
+        ])
+    </section>
+
+    <!-- Active Promotions Section -->
+    @php
+        // Check if any featured hotel has active promotions
+        $hasPromotions = false;
+        foreach($featuredHotels as $hotel) {
+            if($hotel->promotions && count($hotel->promotions) > 0) {
+                $hasPromotions = true;
+                break;
+            }
+        }
+    @endphp
+    
+    @if($hasPromotions)
+    <section class="bg-gradient-to-r from-orange-50 to-yellow-50 py-12">
         <div class="container mx-auto px-4">
-            <div class="text-center mb-8">
-                <h2 class="text-4xl font-bold mb-4">Find Your Perfect Stay in Bhutan</h2>
-                <p class="text-xl text-blue-100">Explore rated hotels across all Dzongkhags</p>
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                    <i class="fas fa-tag text-orange-600 mr-2"></i> Current Promotions
+                </h2>
+                <p class="text-gray-600">Save on your next stay in Bhutan</p>
             </div>
 
-            <!-- Search Form -->
-            <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-7xl mx-auto">
-                <form action="{{ route('guest.search') }}" method="GET" class="flex flex-wrap items-start gap-4">
-                    <!-- Dzongkhag -->
-                    <div class="flex-1 min-w-[200px]">
-                        <label class="block text-gray-900 font-semibold mb-2 text-sm h-5">Dzongkhag</label>
-                        <select name="dzongkhag_id" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white text-base h-[50px]">
-                            <option value="">Select Dzongkhag</option>
-                            @foreach($dzongkhags as $dzongkhag)
-                                <option value="{{ $dzongkhag->id }}">{{ $dzongkhag->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Check-in -->
-                    <div class="flex-1 min-w-[180px]">
-                        <label class="block text-gray-900 font-semibold mb-2 text-sm h-5">Check-in</label>
-                        <input type="date" name="check_in" required min="{{ date('Y-m-d') }}" class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white h-[50px]">
-                    </div>
-
-                    <!-- Check-out -->
-                    <div class="flex-1 min-w-[180px]">
-                        <label class="block text-gray-900 font-semibold mb-2 text-sm h-5">Check-out</label>
-                        <input type="date" name="check_out" required class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white h-[50px]">
-                    </div>
-
-                    <!-- Guests & Rooms Section -->
-                    <div class="flex-1 min-w-[300px]">
-                        <label class="block text-gray-900 font-semibold mb-2 text-sm h-5">Guests & rooms</label>
-                        <div class="flex gap-2 h-[50px]">
-                            <div class="flex-1 relative">
-                                <input type="number" name="adults" min="1" value="2" required class="guest-input w-full h-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white text-center font-semibold">
-                                <span class="absolute -bottom-5 left-0 right-0 text-xs text-gray-600 text-center">Adults</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($featuredHotels as $hotel)
+                    @if($hotel->promotions && count($hotel->promotions) > 0)
+                        @foreach($hotel->promotions as $promotion)
+                            <div class="bg-white rounded-xl shadow-md border-l-4 border-orange-500 overflow-hidden hover:shadow-lg transition">
+                                <div class="bg-gradient-to-r from-orange-500 to-red-500 p-4">
+                                    <div class="flex items-center justify-between">
+                                        <h3 class="text-lg font-bold text-white">{{ $promotion->title }}</h3>
+                                        <div class="bg-white rounded-full px-3 py-1 ml-2">
+                                            <span class="text-2xl font-bold text-orange-600">
+                                                @if($promotion->discount_type === 'percentage')
+                                                    {{ $promotion->discount_value }}%
+                                                @else
+                                                    Nu.{{ number_format($promotion->discount_value, 0) }}
+                                                @endif
+                                            </span>
+                                            <span class="text-xs text-gray-600 block">OFF</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <p class="text-sm text-blue-600 font-semibold mb-2">
+                                        <i class="fas fa-hotel mr-1"></i> {{ $hotel->name }}
+                                    </p>
+                                    @if($promotion->description)
+                                        <p class="text-gray-700 text-sm mb-3">{{ $promotion->description }}</p>
+                                    @endif
+                                    <div class="space-y-2 text-sm text-gray-600">
+                                        <p><i class="fas fa-bed mr-2 text-blue-500"></i><span class="font-semibold">Applies to:</span> {{ $promotion->getAppliesTo() }}</p>
+                                        <p><i class="fas fa-calendar mr-2 text-green-500"></i><span class="font-semibold">Valid until:</span> {{ $promotion->end_date->format('M d, Y') }}</p>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="flex-1 relative">
-                                <input type="number" name="children" min="0" value="0" class="guest-input w-full h-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white text-center font-semibold">
-                                <span class="absolute -bottom-5 left-0 right-0 text-xs text-gray-600 text-center">Children</span>
-                            </div>
-                            <div class="flex-1 relative">
-                                <input type="number" name="rooms" min="1" value="1" required class="guest-input w-full h-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white text-center font-semibold">
-                                <span class="absolute -bottom-5 left-0 right-0 text-xs text-gray-600 text-center">Rooms</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Search Button -->
-                    <div class="pt-7">
-                        <button type="submit" class="bg-blue-600 text-white px-8 py-3 rounded-lg text-base font-semibold hover:bg-blue-700 transition shadow-lg whitespace-nowrap h-[50px]">
-                            <i class="fas fa-search mr-2"></i> Search Hotels
-                        </button>
-                    </div>
-                </form>
+                        @endforeach
+                    @endif
+                @endforeach
             </div>
         </div>
     </section>
+    @endif
 
     <!-- Top Rated Hotels -->
     <section class="container mx-auto px-4 py-12">
@@ -293,5 +266,9 @@
             </div>
         </div>
     </footer>
+
+    <script>
+    // Additional page-specific scripts can be added here if needed
+    </script>
 </body>
 </html>

@@ -6,6 +6,7 @@ use App\Models\Hotel;
 use App\Models\User;
 use App\Models\Dzongkhag;
 use App\Models\HotelDocument;
+use App\Rules\BhutanPhoneNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -27,12 +28,27 @@ class HotelRegistrationController extends Controller
      */
     public function register(Request $request)
     {
+        // Custom validation for property image to accept all valid image formats
+        $propertyImageRules = 'nullable|max:2048';
+        if ($request->hasFile('property_image')) {
+            $extension = strtolower($request->file('property_image')->getClientOriginalExtension());
+            if (!in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                return back()->withErrors(['property_image' => 'The property image must be a file of type: jpeg, jpg, png, or gif.'])
+                            ->withInput();
+            }
+            // Check file size
+            if ($request->file('property_image')->getSize() > 2048 * 1024) {
+                return back()->withErrors(['property_image' => 'The property image must not exceed 2MB.'])
+                            ->withInput();
+            }
+        }
+
         // Validate the request
         $validated = $request->validate([
             // Personal Details
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'mobile' => 'required|string|max:20',
+            'mobile' => ['required', new BhutanPhoneNumber()],
             'password' => 'required|string|min:8|confirmed',
             
             // Property Details
@@ -43,8 +59,8 @@ class HotelRegistrationController extends Controller
             'pin_location' => 'nullable|string',
             'star_rating' => 'nullable|integer|min:1|max:5',
             'description' => 'nullable|string',
-            'property_image' => 'nullable|image|mimes:jpeg,jpg,png,gif|max:2048',
-            'phone' => 'required|string|max:20',
+            'property_image' => $propertyImageRules,
+            'phone' => ['required', new BhutanPhoneNumber()],
             
             // Tourism Registration Details
             'tourism_license_number' => 'required|string|max:255',
@@ -53,16 +69,16 @@ class HotelRegistrationController extends Controller
             'license_expiry_date' => 'required|date|after:license_issue_date',
             
             // Documents
-            'tourism_license_doc' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
-            'property_ownership_doc' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'tourism_license_doc' => 'required|file|extensions:pdf,jpg,jpeg,png|max:5120',
+            'property_ownership_doc' => 'required|file|extensions:pdf,jpg,jpeg,png|max:5120',
             
             // Declaration
             'declaration' => 'required|accepted',
         ], [
-            'property_image.image' => 'The property image must be a valid image file.',
-            'property_image.mimes' => 'The property image must be a file of type: jpeg, jpg, png, or gif.',
             'property_image.max' => 'The property image must not exceed 2MB.',
+            'tourism_license_doc.extensions' => 'The tourism license document must be a file of type: pdf, jpg, jpeg, or png.',
             'tourism_license_doc.max' => 'The tourism license document must not exceed 5MB.',
+            'property_ownership_doc.extensions' => 'The property ownership doc field must be a file of type: pdf, jpg, jpeg, png.',
             'property_ownership_doc.max' => 'The property ownership document must not exceed 5MB.',
         ]);
 
@@ -73,7 +89,7 @@ class HotelRegistrationController extends Controller
             $user = User::create([
                 'name' => $validated['full_name'],
                 'email' => $validated['email'],
-                'mobile' => $validated['mobile'],
+                'phone' => $validated['mobile'],
                 'password' => Hash::make($validated['password']),
                 'role' => 'OWNER', // Always OWNER for property registration
             ]);
@@ -90,8 +106,12 @@ class HotelRegistrationController extends Controller
             // Get dzongkhag name
             $dzongkhag = Dzongkhag::find($validated['dzongkhag_id']);
 
+            // Generate hotel_id
+            $hotelId = Hotel::generateHotelId();
+
             // Create the hotel
             $hotel = Hotel::create([
+                'hotel_id' => $hotelId,
                 'owner_id' => $user->id,
                 'name' => $validated['hotel_name'],
                 'property_type' => $validated['property_type'],
@@ -109,7 +129,7 @@ class HotelRegistrationController extends Controller
                 'issuing_authority' => $validated['issuing_authority'],
                 'license_issue_date' => $validated['license_issue_date'],
                 'license_expiry_date' => $validated['license_expiry_date'],
-                'status' => 'PENDING',
+                'status' => 'pending',
             ]);
 
             // Update user's hotel_id
@@ -203,10 +223,14 @@ class HotelRegistrationController extends Controller
             'tourism_license_number' => 'required|string',
         ]);
 
-        // Find hotel by matching all three fields
+        // Find hotel by matching email and tourism license
+        // The mobile field can match either the mobile or phone column
         $hotel = Hotel::where('email', $validated['email'])
-            ->where('mobile', $validated['mobile'])
             ->where('tourism_license_number', $validated['tourism_license_number'])
+            ->where(function($query) use ($validated) {
+                $query->where('mobile', $validated['mobile'])
+                      ->orWhere('phone', $validated['mobile']);
+            })
             ->first();
 
         if (!$hotel) {
