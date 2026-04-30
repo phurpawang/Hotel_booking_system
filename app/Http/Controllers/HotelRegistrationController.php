@@ -87,12 +87,16 @@ class HotelRegistrationController extends Controller
                 $propertyImagePath = $file->storeAs('property_images', $filename, 'public');
             }
 
+            // Get dzongkhag name
+            $dzongkhag = Dzongkhag::find($validated['dzongkhag_id']);
+
             // Create the hotel
             $hotel = Hotel::create([
                 'owner_id' => $user->id,
                 'name' => $validated['hotel_name'],
                 'property_type' => $validated['property_type'],
                 'address' => $validated['address'],
+                'dzongkhag' => $dzongkhag ? $dzongkhag->name : null,
                 'dzongkhag_id' => $validated['dzongkhag_id'],
                 'pin_location' => $validated['pin_location'] ?? null,
                 'phone' => $validated['phone'],

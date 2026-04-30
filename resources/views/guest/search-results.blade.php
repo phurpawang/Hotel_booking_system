@@ -75,15 +75,15 @@
                                 <div class="flex-1 p-6">
                                     <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ $hotel->name }}</h2>
                                     <p class="text-gray-600 mb-2">
-                                        <i class="fas fa-map-marker-alt text-gray-500 mr-1"></i>
-                                        {{ $hotel->address }}
+                                        <i class="fas fa-map-marker-alt text-blue-600 mr-1"></i>
+                                        @if($hotel->dzongkhag)
+                                            <span class="font-semibold">{{ $hotel->dzongkhag }}, Bhutan</span>
+                                        @elseif($hotel->dzongkhag_relation)
+                                            <span class="font-semibold">{{ $hotel->dzongkhag_relation->name }}, Bhutan</span>
+                                        @else
+                                            Bhutan
+                                        @endif
                                     </p>
-                                    @if($hotel->dzongkhag)
-                                    <p class="text-gray-600 mb-4">
-                                        <i class="fas fa-location-dot text-blue-600 mr-1"></i>
-                                        <span class="font-semibold">{{ $hotel->dzongkhag->name }}</span>
-                                    </p>
-                                    @endif
                                     
                                     <h3 class="text-xl font-bold text-gray-800 mb-2">{{ $room->room_type }}</h3>
                                     

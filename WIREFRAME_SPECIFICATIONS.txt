@@ -1,0 +1,2612 @@
+BHUTAN HOTEL BOOKING SYSTEM (BHBS)
+WIREFRAME SPECIFICATIONS FOR LUCIDCHART
+
+Project: BHBS - Hotel Management System
+Prepared By: Phurpa Wangchuk (Roll 19)
+Date: March 12, 2026
+Supervisor: Pelmo Thinley
+
+==============================================================================
+TABLE OF CONTENTS
+==============================================================================
+
+1. Design Guidelines and Color Scheme
+2. Common Components (Header, Navigation, Footer)
+3. Public Pages
+   3.1 Hotel Registration Page
+   3.2 Status Check Page
+4. Authentication Pages
+   4.1 Login Page
+   4.2 Password Reset Page
+5. Admin Dashboard and Pages
+   5.1 Admin Dashboard
+   5.2 Pending Hotel Approvals
+   5.3 Hotel Details Review
+6. Owner Dashboard and Pages
+   6.1 Owner Dashboard
+   6.2 Staff Management
+   6.3 Revenue Reports
+7. Manager Dashboard and Pages
+   7.1 Manager Dashboard
+   7.2 Room Management List
+   7.3 Add/Edit Room
+8. Receptionist Dashboard and Pages
+   8.1 Receptionist Dashboard
+   8.2 Create Booking Form
+   8.3 Guest Management
+   8.4 Check-in/Check-out
+9. Shared Pages
+   9.1 Booking List View
+   9.2 Booking Details Page
+   9.3 Guest Profile Page
+10. Reports and Analytics
+    10.1 Revenue Report with Charts
+    10.2 Occupancy Report
+
+
+==============================================================================
+1. DESIGN GUIDELINES AND COLOR SCHEME
+==============================================================================
+
+SCREEN RESOLUTION: Design for 1920x1080 (desktop primary), with responsive breakpoints
+
+COLOR SCHEME:
+Primary Color: #1E40AF (Blue - Trust, Professionalism)
+Secondary Color: #10B981 (Green - Success, Approval)
+Accent Color: #F59E0B (Amber - Warning, Pending)
+Danger Color: #EF4444 (Red - Error, Rejection)
+Background: #F9FAFB (Light Gray)
+Text Primary: #111827 (Dark Gray)
+Text Secondary: #6B7280 (Medium Gray)
+White: #FFFFFF
+Border: #E5E7EB (Light Gray)
+
+TYPOGRAPHY:
+Headings: Inter/Poppins, Bold, 24px-32px
+Body Text: Inter/Roboto, Regular, 14px-16px
+Labels: Inter/Roboto, Medium, 12px-14px
+Buttons: Inter/Roboto, Semibold, 14px-16px
+
+SPACING:
+Margin/Padding: 8px, 16px, 24px, 32px, 48px (multiples of 8)
+Grid System: 12-column grid with 16px gutters
+Container Max Width: 1280px
+Card Padding: 24px
+
+BUTTON SIZES:
+Small: 32px height, 12px padding
+Medium: 40px height, 16px padding
+Large: 48px height, 20px padding
+
+ICONS:
+Use: Heroicons, Font Awesome, or Material Icons
+Size: 16px, 20px, 24px
+
+
+==============================================================================
+2. COMMON COMPONENTS
+==============================================================================
+
+--------------------------------------------------
+2.1 HEADER (ALL AUTHENTICATED PAGES)
+--------------------------------------------------
+
+Layout: Full width, height 64px, white background, shadow-sm
+
+[Left Side]
+   - Logo/Brand: "BHBS" text or icon (32px height)
+   - System Name: "Bhutan Hotel Booking System" (14px, gray)
+
+[Center]
+   - Navigation Links (based on role)
+   
+[Right Side]
+   - Hotel Name: "Druk Hotel" (if not admin)
+   - User Avatar: Circle (40px) with initials or photo
+   - User Name: "Phurpa Wangchuk"
+   - Role Badge: Small pill badge showing "Owner" / "Manager" / "Receptionist"
+   - Dropdown Icon: Chevron down
+   
+[Dropdown Menu on Avatar Click]
+   - My Profile
+   - Change Password
+   - Settings
+   - Divider line
+   - Logout (red text)
+
+--------------------------------------------------
+2.2 SIDEBAR NAVIGATION (VERTICAL)
+--------------------------------------------------
+
+Layout: Fixed left side, width 240px, height 100vh, white/light gray background
+
+[Top Section - 80px]
+   - Logo and system name
+
+[Middle Section - Navigation Items]
+Each item: 48px height, 16px vertical padding, icon + text
+Active state: Blue background light, blue text, left border (4px blue)
+Hover state: Light gray background
+
+Navigation Items by Role:
+
+ADMIN:
+   - Dashboard (Home icon)
+   - Pending Approvals (Clock icon) + Badge count
+   - All Hotels (Building icon)
+   - System Statistics (Chart icon)
+   - Settings (Gear icon)
+
+OWNER:
+   - Dashboard (Home icon)
+   - Bookings (Calendar icon)
+   - Rooms (Bed icon)
+   - Guests (Users icon)
+   - Staff Management (User-plus icon)
+   - Reports (Chart-bar icon)
+   - Settings (Gear icon)
+
+MANAGER:
+   - Dashboard (Home icon)
+   - Bookings (Calendar icon)
+   - Rooms (Bed icon)
+   - Guests (Users icon)
+   - Reports (Chart-bar icon)
+
+RECEPTIONIST:
+   - Dashboard (Home icon)
+   - Create Booking (Plus-circle icon)
+   - Today's Check-ins (Login icon)
+   - Today's Check-outs (Logout icon)
+   - All Bookings (Calendar icon)
+   - Guests (Users icon)
+
+[Bottom Section - 64px]
+   - User profile summary
+   - Logout button (red, outline)
+
+--------------------------------------------------
+2.3 FOOTER (PUBLIC PAGES ONLY)
+--------------------------------------------------
+
+Layout: Full width, height 80px, dark gray background
+
+[Center Aligned]
+   - Copyright: "2026 Tourism Council of Bhutan. All Rights Reserved."
+   - Links: Privacy Policy | Terms of Service | Contact
+   - Social Media Icons (optional)
+
+
+==============================================================================
+3. PUBLIC PAGES
+==============================================================================
+
+--------------------------------------------------
+3.1 HOTEL REGISTRATION PAGE
+--------------------------------------------------
+
+URL: /register
+Layout: Full width centered, max-width 800px
+Background: Light gradient or image of Bhutan hotels
+
+[Top Section]
+   Hero Banner: 200px height
+   - Heading: "Register Your Hotel" (32px, bold)
+   - Subheading: "Join Bhutan's premier hotel booking platform"
+   - Icon: Building/Hotel illustration
+
+[Form Section - Card Style, Shadow]
+   
+   Step Indicator: 1 of 3 steps (progress bar)
+   
+   [Step 1: Hotel Information]
+   
+   Hotel Details (Grid 2 columns)
+   - Hotel Name * (text input, full width)
+   - Email Address * (email input, with @ icon)
+   - Phone Number * (tel input, with phone icon, format: +975-XXXXXXXX)
+   - Hotel Type (dropdown: Hotel, Resort, Guest House, Lodge)
+   
+   Location Details (Grid 2 columns)
+   - Dzongkhag * (dropdown: 20 dzongkhags)
+   - Gewog/Town * (text input)
+   - Street Address * (text input, full width)
+   - Postal Code (text input)
+   
+   [Step 2: License Information]
+   
+   - Tourism License Number * (text input)
+   - License Issue Date * (date picker)
+   - License Expiry Date * (date picker)
+   - Hotel Registration Number * (text input)
+   - Total Number of Rooms * (number input)
+   - Star Rating (dropdown: 1-5 stars, Unrated)
+   
+   [Step 3: Document Upload]
+   
+   Document Upload Areas (each section):
+   - Tourism License Document *
+     Drag-and-drop area or "Choose File" button
+     Accepted: PDF, JPG, PNG (max 5MB)
+     Show file name after upload
+     Preview thumbnail (if image)
+   
+   - Ownership Documents *
+     Same format as above
+   
+   Website/Contact (optional)
+   - Website URL (text input with globe icon)
+   - Contact Person Name (text input)
+   - Alternate Phone (tel input)
+   
+   Agreement Section:
+   - Checkbox: "I agree to the Terms and Conditions *"
+   - Checkbox: "I certify that all information provided is accurate"
+   
+   [Button Section]
+   - Back Button (if step > 1) - Secondary, left aligned
+   - Next Button (if step < 3) - Primary, right aligned
+   - Submit Application (if step 3) - Primary, full width
+   
+   [Below Form]
+   - Already registered? Login here (link)
+   - Need help? Contact support (link)
+
+Validation:
+- Red border on invalid fields
+- Inline error messages below fields
+- Success message on submission
+
+--------------------------------------------------
+3.2 STATUS CHECK PAGE
+--------------------------------------------------
+
+URL: /check-status
+Layout: Centered, max-width 600px
+
+[Top Section]
+   - Heading: "Check Application Status"
+   - Icon: Search or clipboard
+
+[Search Form - Card]
+   - Hotel Email Address (email input, large)
+   - Hotel Name (text input, large)
+   - Search Button (primary, full width)
+
+[Results Section - Shows after search]
+
+If PENDING:
+   Card with amber left border
+   - Status Badge: "Pending Review" (amber)
+   - Hotel ID: HTL001
+   - Hotel Name: Druk Hotel
+   - Submission Date: March 1, 2026
+   - Message: "Your application is under review. You will receive an email once processed."
+   - Icon: Clock, amber
+   - Estimated Time: "2-3 business days"
+
+If APPROVED:
+   Card with green left border
+   - Status Badge: "Approved" (green)
+   - Hotel ID: HTL001
+   - Hotel Name: Druk Hotel
+   - Approval Date: March 5, 2026
+   - Message: "Congratulations! Your hotel has been approved."
+   - Login Button: "Login to Dashboard" (primary, green)
+   - Icon: Check circle, green
+
+If REJECTED:
+   Card with red left border
+   - Status Badge: "Rejected" (red)
+   - Hotel Name: Druk Hotel
+   - Rejection Date: March 5, 2026
+   - Reason: "Tourism license document is unclear. Please resubmit."
+   - Icon: X circle, red
+   - Resubmit Button: "Submit New Application" (secondary)
+
+
+==============================================================================
+4. AUTHENTICATION PAGES
+==============================================================================
+
+--------------------------------------------------
+4.1 LOGIN PAGE
+--------------------------------------------------
+
+URL: /login
+Layout: Split screen or centered card (600px width)
+
+[Left Side - If Split Screen, 50%]
+   - Background image: Bhutan landscape/hotels
+   - Overlay with system logo and tagline
+   - Features list:
+     * Real-time booking management
+     * 10% commission only
+     * Complete analytics
+     * Multi-role access
+
+[Right Side or Centered Card]
+   
+   [Card Header]
+   - Logo (centered)
+   - Heading: "Welcome Back" (24px, bold)
+   - Subheading: "Sign in to your account"
+   
+   [Form Section]
+   
+   Role Selection Tabs (if multiple roles):
+   - Tab: Hotel Staff (active)
+   - Tab: Administrator
+   
+   [Hotel Staff Login]
+   - Email Address (email input, large, envelope icon)
+     Placeholder: "your.email@hotel.com"
+   
+   - Password (password input, large, lock icon)
+     Placeholder: "Enter your password"
+     Toggle visibility icon (eye/eye-slash)
+   
+   - Remember Me (checkbox, left)
+   - Forgot Password? (link, right)
+   
+   - Login Button (primary, full width, large)
+   
+   Divider line with "OR"
+   
+   - Register Hotel Button (secondary, full width)
+     "New hotel? Register here"
+   
+   - Check Application Status (link, centered)
+   
+   [Footer]
+   - Help & Support (link)
+   - Privacy Policy (link)
+
+Form States:
+- Loading: Button shows spinner, disabled
+- Error: Red alert box above form with message
+- Success: Green transition before redirect
+
+--------------------------------------------------
+4.2 PASSWORD RESET PAGE
+--------------------------------------------------
+
+URL: /password/reset
+Layout: Centered card, 500px width
+
+[Step 1: Request Reset]
+   - Heading: "Reset Password"
+   - Icon: Key or lock
+   - Description: "Enter your email and we'll send reset instructions"
+   
+   - Email Address (email input, large)
+   - Send Reset Link Button (primary, full width)
+   
+   - Back to Login (link)
+
+[Step 2: Check Email]
+   - Icon: Mail/envelope (large, blue)
+   - Heading: "Check Your Email"
+   - Message: "We've sent password reset instructions to phurpa@hotel.com"
+   - Resend Email Button (secondary)
+   - Back to Login (link)
+
+[Step 3: New Password Form]
+   - Heading: "Create New Password"
+   
+   - New Password (password input, with strength indicator)
+     Password Requirements shown below:
+     * At least 8 characters
+     * One uppercase letter
+     * One number
+   
+   - Confirm Password (password input)
+   
+   - Reset Password Button (primary, full width)
+
+Success:
+   - Icon: Check circle (green, large)
+   - Message: "Password reset successful!"
+   - Login Now Button (primary)
+
+
+==============================================================================
+5. ADMIN DASHBOARD AND PAGES
+==============================================================================
+
+--------------------------------------------------
+5.1 ADMIN DASHBOARD
+--------------------------------------------------
+
+URL: /admin/dashboard
+Layout: Sidebar + Main content area
+
+[Page Header]
+   - Heading: "Admin Dashboard"
+   - Breadcrumb: Home > Dashboard
+   - Date Range Filter: Last 30 days (dropdown)
+   - Refresh Button (icon only)
+
+[Statistics Cards Row - 4 cards, equal width]
+
+Card 1: Total Hotels
+   - Icon: Building (blue)
+   - Number: 247 (large, 36px)
+   - Label: "Registered Hotels"
+   - Trend: +12 this month (green, small)
+   - Background: White, shadow
+
+Card 2: Pending Approvals
+   - Icon: Clock (amber)
+   - Number: 8 (large, 36px, amber)
+   - Label: "Awaiting Review"
+   - Action Link: "Review Now" (amber)
+   - Background: White, shadow
+   - Pulse animation on number
+
+Card 3: Total Bookings
+   - Icon: Calendar (green)
+   - Number: 1,245 (large, 36px)
+   - Label: "Total Bookings"
+   - Trend: +5.2% vs last month (green, small)
+   - Background: White, shadow
+
+Card 4: System Revenue
+   - Icon: Currency (blue)
+   - Number: Nu. 2.4M (large, 36px)
+   - Label: "Commission Earned"
+   - Trend: +8.1% (green, small)
+   - Background: White, shadow
+
+[Charts Section - 2 columns]
+
+[Left Column - 60%]
+   Card: Booking Trends
+   - Title: "Booking Trends (Last 6 Months)"
+   - Chart Type: Line chart or area chart
+   - X-axis: Months (Oct, Nov, Dec, Jan, Feb, Mar)
+   - Y-axis: Number of bookings (0-500)
+   - Line Color: Blue gradient
+   - Data Points: Visible on hover
+   - Legend: Total Bookings
+   - Height: 400px
+
+[Right Column - 40%]
+   Card: Hotel Status Distribution
+   - Title: "Hotel Status Overview"
+   - Chart Type: Doughnut chart
+   - Segments:
+     * Approved: 85% (green)
+     * Pending: 5% (amber)
+     * Rejected: 10% (red)
+   - Center: Total count (247)
+   - Legend: Right side with counts
+   - Height: 400px
+
+[Recent Activity Section - Full width]
+   Card: Recent Hotel Applications
+   - Title: "Recent Applications"
+   - View All Button (link, right)
+   
+   Table Columns:
+   - Hotel ID (HTL001)
+   - Hotel Name (Druk Hotel)
+   - Location (Thimphu)
+   - Submission Date (Mar 10, 2026, 2:30 PM)
+   - Status (Badge: Pending/Approved/Rejected)
+   - Actions (View, Approve, Reject buttons - icon only)
+   
+   Pagination: Bottom, 10 per page
+
+[Quick Actions Card - Right sidebar or bottom]
+   - Generate System Report (button)
+   - Export Hotel List (button)
+   - System Settings (button)
+   - View Logs (button)
+
+--------------------------------------------------
+5.2 PENDING HOTEL APPROVALS PAGE
+--------------------------------------------------
+
+URL: /admin/pending-approvals
+Layout: List view with filters
+
+[Page Header]
+   - Heading: "Pending Hotel Approvals"
+   - Badge: Count (8 pending)
+   - Breadcrumb: Home > Pending Approvals
+
+[Filter Bar]
+   - Search: Hotel name or ID (text input with search icon)
+   - Filter by Dzongkhag (dropdown)
+   - Sort by: Submission Date (dropdown)
+   - Date Range: Last 7 days (date range picker)
+
+[Application Cards - List View]
+
+Each Card Layout (White, shadow, 16px padding):
+   
+   [Header Row]
+   - Left: Hotel ID (HTL012, bold) | Hotel Name (Druk Heritage Hotel, large)
+   - Right: Submission Date (March 10, 2026, 10:30 AM, gray)
+   
+   [Content Grid - 3 columns]
+   
+   Column 1: Hotel Details
+   - Location: Thimphu, Motithang
+   - Contact: +975-2-123456
+   - Email: info@drukheritage.bt
+   - Total Rooms: 24
+   - Star Rating: 3 stars
+   
+   Column 2: License Information
+   - License Number: TL-2026-1234
+   - Issue Date: Jan 15, 2026
+   - Expiry Date: Jan 14, 2027
+   - Registration: HR-2026-567
+   
+   Column 3: Documents
+   - Tourism License (PDF icon)
+     View Document (link)
+     Download (icon)
+   - Ownership Documents (PDF icon)
+     View Document (link)
+     Download (icon)
+   
+   [Footer Row - Action Buttons]
+   - View Full Details (secondary button)
+   - Reject (red outline button, left icon: X)
+   - Approve (green primary button, left icon: check)
+
+Pagination: Standard, 5 cards per page
+
+--------------------------------------------------
+5.3 HOTEL DETAILS REVIEW PAGE (MODAL OR FULL PAGE)
+--------------------------------------------------
+
+URL: /admin/hotels/HTL012/review
+Layout: Modal overlay (800px width) or full page
+
+[Modal Header]
+   - Title: "Review Hotel Application"
+   - Hotel ID: HTL012
+   - Close button (X icon, top right)
+
+[Tabs]
+   Tab 1: Hotel Information (active)
+   Tab 2: Documents
+   Tab 3: Notes & History
+
+[Tab 1: Hotel Information]
+   
+   Section: Basic Details
+   - Hotel Name: Druk Heritage Hotel
+   - Email: info@drukheritage.bt
+   - Phone: +975-2-123456
+   - Hotel Type: Heritage Hotel
+   
+   Section: Location
+   - Dzongkhag: Thimphu
+   - Gewog/Area: Motithang
+   - Address: Above Clock Tower, Motithang
+   - Postal Code: 11001
+   
+   Section: License Details
+   - License Number: TL-2026-1234
+   - Issue Date: January 15, 2026
+   - Expiry Date: January 14, 2027
+   - Registration Number: HR-2026-567
+   - Total Rooms: 24 rooms
+   - Star Rating: 3 Star
+   
+   Section: Contact Person
+   - Name: Karma Dorji
+   - Position: General Manager
+   - Contact: +975-17-123456
+   - Website: www.drukheritage.bt
+
+[Tab 2: Documents]
+   
+   Document Viewer:
+   - Tourism License Document
+     Preview: Embedded PDF viewer or image
+     Download Button (icon)
+     Zoom Controls (+/-)
+     Rotate (if image)
+   
+   - Ownership Documents
+     Same layout as above
+   
+   Document Status Checkboxes:
+   - Tourism license is valid and clear
+   - Ownership documents are complete
+   - All information is verified
+
+[Tab 3: Notes & History]
+   
+   Timeline View:
+   - Mar 10, 2026 10:30 AM: Application submitted
+   - Mar 10, 2026 10:32 AM: Documents uploaded
+   - Mar 12, 2026 09:15 AM: Under review by Admin Name
+   
+   Admin Notes Section (textarea):
+   - Internal notes (not visible to hotel)
+   - Previous notes (if resubmission)
+
+[Modal Footer - Fixed at bottom]
+   
+   [Left side]
+   - Cancel Button (secondary)
+   
+   [Right side]
+   - Reject Button (red, outline)
+     Opens: Rejection reason modal
+   
+   - Approve Button (green, primary)
+     Opens: Confirmation dialog
+     Sends approval email automatically
+
+[Rejection Reason Modal]
+   - Title: "Reject Application"
+   - Warning icon (red)
+   - Reason for Rejection (textarea, required)
+     Placeholder: "Explain why this application is rejected..."
+   - Common Reasons (checkboxes):
+     * License document unclear
+     * Expired license
+     * Incomplete information
+     * Invalid ownership documents
+     * Other (specify)
+   - Cancel Button
+   - Confirm Rejection Button (red)
+
+[Approval Confirmation]
+   - Title: "Approve Hotel Application?"
+   - Icon: Check circle (green)
+   - Hotel Name: Druk Heritage Hotel
+   - Hotel ID: HTL012
+   - Message: "An approval email will be sent to info@drukheritage.bt"
+   - Checkbox: "Grant immediate login access"
+   - Cancel Button
+   - Confirm Approval Button (green)
+
+
+==============================================================================
+6. OWNER DASHBOARD AND PAGES
+==============================================================================
+
+--------------------------------------------------
+6.1 OWNER DASHBOARD
+--------------------------------------------------
+
+URL: /owner/dashboard
+Layout: Sidebar + Main content
+
+[Page Header]
+   - Heading: "Dashboard"
+   - Hotel Name: "Druk Heritage Hotel" (large, under heading)
+   - Date Range: Today | This Week | This Month (button group)
+   - Date: March 12, 2026 (right side)
+
+[Key Metrics Row - 5 cards]
+
+Card 1: Today's Check-ins
+   - Icon: Login arrow (blue)
+   - Number: 3 (large, 32px)
+   - Label: "Check-ins Today"
+   - Link: "View Details" (small)
+   - Background: Blue light gradient
+
+Card 2: Today's Check-outs
+   - Icon: Logout arrow (red)
+   - Number: 2 (large, 32px)
+   - Label: "Check-outs Today"
+   - Link: "View Details" (small)
+   - Background: Red light gradient
+
+Card 3: Current Occupancy
+   - Icon: Bed (green)
+   - Number: 18/24 (large, 32px)
+   - Label: "Rooms Occupied"
+   - Progress Bar: 75% (green)
+   - Background: Green light gradient
+
+Card 4: This Month Revenue
+   - Icon: Currency (amber)
+   - Number: Nu. 245,000 (large, 28px)
+   - Label: "Total Revenue"
+   - Trend: +12% (green arrow)
+   - Background: Amber light gradient
+
+Card 5: Pending Payments
+   - Icon: Alert circle (orange)
+   - Number: Nu. 45,000 (large, 28px)
+   - Label: "Unpaid Bookings"
+   - Count: 7 bookings
+   - Background: Orange light gradient
+
+[Charts Section - 2 rows]
+
+[Row 1 - 2 columns]
+
+Left (60%): Revenue Trend Chart
+   - Title: "Revenue Overview (Last 6 Months)"
+   - Subtitle: "Base Amount vs Commission"
+   - Chart Type: Stacked bar chart or line chart
+   - X-axis: Months (Oct-Mar)
+   - Y-axis: Amount (Nu. thousands)
+   - Two lines/bars:
+     * Base Amount (hotel earning) - Blue
+     * Commission (platform fee) - Amber
+   - Legend: Top right
+   - Tooltips on hover
+   - Height: 350px
+   - Export button (top right)
+
+Right (40%): Occupancy Rate Chart
+   - Title: "Occupancy Rate (Last 30 Days)"
+   - Chart Type: Area chart or line chart
+   - X-axis: Dates (last 30 days)
+   - Y-axis: Percentage (0-100%)
+   - Line Color: Green gradient
+   - Average Line: Dotted horizontal at 68%
+   - Current: 75% (green badge)
+   - Height: 350px
+
+[Row 2 - Full width]
+
+Booking Calendar View:
+   - Title: "Booking Calendar - March 2026"
+   - Calendar Type: Month view grid
+   - Navigation: < Previous | March 2026 | Next >
+   - Each Date Cell shows:
+     * Date number
+     * Number of check-ins (green dot)
+     * Number of check-outs (red dot)
+     * Occupancy percentage (if > 80%, orange background)
+   - Click date: Shows bookings for that day (modal)
+   - Legend: Check-in (green) | Check-out (red) | High Occupancy (orange)
+
+[Upcoming Activity Section - 2 columns]
+
+Left: Upcoming Check-ins (Next 7 Days)
+   - Card with list
+   - Title: "Upcoming Check-ins"
+   - Badge: Count (8)
+   
+   List Items (5 shown):
+   - Date: March 13 (badge)
+   - Guest Name: Tashi Dorji
+   - Room: 101 - Deluxe
+   - Nights: 3 nights
+   - Action: Prepare Room (button, small)
+   
+   View All Button (bottom)
+
+Right: Upcoming Check-outs (Next 7 Days)
+   - Same layout as check-ins
+   - Action: Process Checkout (button, small)
+
+[Staff Activity Card]
+   - Title: "Staff Performance (This Month)"
+   - Table:
+     * Staff Name | Role | Bookings Created | Check-ins Processed
+     * Karma Dorji | Manager | 12 | -
+     * Sonam Lhamo | Receptionist | 45 | 38
+   - View Full Report (link)
+
+[Quick Actions Bar - Top right or floating]
+   - Create Staff Account (button, icon: user-plus)
+   - Add Room (button, icon: plus)
+   - Create Booking (button, primary, icon: calendar-plus)
+   - Generate Report (button, icon: chart)
+
+--------------------------------------------------
+6.2 STAFF MANAGEMENT PAGE
+--------------------------------------------------
+
+URL: /owner/staff
+Layout: List view with action bar
+
+[Page Header]
+   - Heading: "Staff Management"
+   - Breadcrumb: Home > Staff Management
+   - Create Staff Button (primary, right, icon: user-plus)
+
+[Stats Bar - 3 small cards]
+   - Total Staff: 5
+   - Managers: 1
+   - Receptionists: 4
+
+[Filter Bar]
+   - Search: Name or email (text input)
+   - Filter by Role: All | Manager | Receptionist (tabs)
+   - Sort by: Name | Date Added (dropdown)
+
+[Staff Table]
+
+Table Columns:
+   - Photo (circle avatar, 40px)
+   - Name (bold) + Email (gray, below)
+   - Role (badge: Manager-blue, Receptionist-green)
+   - Created By (Owner name)
+   - Date Added (Mar 1, 2026)
+   - Last Login (2 hours ago / Never)
+   - Status (Active/Inactive toggle)
+   - Actions (Edit, Delete icons)
+
+Table Features:
+   - Hover: Light background
+   - Select: Checkbox for bulk actions
+   - Bulk Actions: Delete selected, Send reset password
+
+No Staff State:
+   - Empty state illustration
+   - Message: "No staff members yet"
+   - Create Staff Button (primary, large)
+
+[Create Staff Modal - Opens on button click]
+
+Modal: 600px width
+
+   - Title: "Create Staff Account"
+   - Close button (X, top right)
+   
+   [Form]
+   
+   - Full Name * (text input)
+     Placeholder: "Enter full name"
+   
+   - Email Address * (email input)
+     Placeholder: "staff@hotel.com"
+     Note: "This will be used for login"
+   
+   - Phone Number (tel input)
+     Placeholder: "+975-17-XXXXXX"
+   
+   - Role * (radio buttons, large)
+     Option 1: Manager
+       Icon: User-tie
+       Description: "Can manage rooms, pricing, view bookings"
+     Option 2: Receptionist
+       Icon: User
+       Description: "Can create bookings, check-in/out guests"
+   
+   - Temporary Password * (password input)
+     Generate button (icon: refresh)
+     Note: "Staff will be asked to change on first login"
+     Show/Hide toggle
+   
+   - Send Welcome Email (checkbox, checked)
+   
+   [Footer]
+   - Cancel Button (secondary)
+   - Create Account Button (primary)
+
+Success:
+   - Toast notification: "Staff account created successfully"
+   - Email sent confirmation
+   - Table updates with new staff
+
+[Edit Staff Modal]
+   - Same form as create
+   - Pre-filled with existing data
+   - Cannot change email
+   - Reset Password button (separate action)
+
+[Delete Confirmation Modal]
+   - Warning icon (red)
+   - Title: "Delete Staff Account?"
+   - Staff Name: Sonam Lhamo
+   - Warning: "This action cannot be undone. All login access will be revoked."
+   - Cancel Button
+   - Delete Button (red, "Delete Account")
+
+--------------------------------------------------
+6.3 REVENUE REPORTS PAGE
+--------------------------------------------------
+
+URL: /owner/reports/revenue
+Layout: Full page with filters
+
+[Page Header]
+   - Heading: "Revenue Reports"
+   - Breadcrumb: Home > Reports > Revenue
+   - Export Buttons: Export PDF | Export Excel (right side)
+
+[Filter Card - Top]
+   - Date Range: Start Date | End Date (date pickers)
+   - Quick Filters: Today | This Week | This Month | Last Month | Custom
+   - Payment Status: All | Paid | Pending (dropdown)
+   - Apply Filter Button (primary)
+   - Reset Button (secondary)
+
+[Summary Cards Row - 4 cards]
+
+Card 1: Total Revenue
+   - Icon: Currency (blue)
+   - Amount: Nu. 245,000 (large, 36px)
+   - Period: "March 1-12, 2026"
+   - Trend: +18% vs previous period
+
+Card 2: Hotel Earnings
+   - Icon: Building (green)
+   - Amount: Nu. 220,500 (large, 36px)
+   - Label: "Base Amount (90%)"
+   - Percentage: 90% of total
+
+Card 3: Platform Commission
+   - Icon: Percentage (amber)
+   - Amount: Nu. 24,500 (large, 32px)
+   - Label: "Commission (10%)"
+   - Percentage: 10% of total
+
+Card 4: Average Booking Value
+   - Icon: Receipt (blue)
+   - Amount: Nu. 5,100 (large, 32px)
+   - Label: "Per Booking"
+   - Bookings: 48 bookings
+
+[Revenue Chart - Large]
+   - Title: "Daily Revenue Breakdown"
+   - Chart Type: Bar chart with line overlay
+   - X-axis: Dates (March 1-12)
+   - Y-axis: Amount (Nu.)
+   - Bars: Daily revenue (blue)
+   - Line: Running total (red dotted)
+   - Legend: Bottom
+   - Height: 400px
+   - Interactive tooltips
+
+[Detailed Revenue Table]
+
+Table Title: "Revenue Details"
+
+Columns:
+   - Date (Mar 10, 2026)
+   - Booking ID (BK-1234, link)
+   - Guest Name (Tashi Dorji)
+   - Room (101 - Deluxe)
+   - Nights (3)
+   - Base Amount (Nu. 9,000)
+   - Commission (Nu. 1,000, 10%)
+   - Final Amount (Nu. 10,000)
+   - Payment Status (Paid-green, Pending-amber badge)
+   - Payment Method (Pay Online / Pay at Hotel)
+
+Table Features:
+   - Sortable columns
+   - Search within table
+   - Pagination: 20 per page
+   - Row click: Opens booking details
+   - Total row at bottom (sum of all amounts)
+
+[Payment Status Summary - Side Card]
+   - Paid Bookings: 41 (Nu. 145,000) - Green
+   - Pending Payments: 7 (Nu. 100,000) - Amber
+   - Progress bar showing ratio
+
+[Export Preview Modal]
+   - Shows preview before export
+   - Options: Include charts | Summary only
+   - Format: PDF / Excel
+   - Confirm Export Button
+
+
+==============================================================================
+7. MANAGER DASHBOARD AND PAGES
+==============================================================================
+
+--------------------------------------------------
+7.1 MANAGER DASHBOARD
+--------------------------------------------------
+
+URL: /manager/dashboard
+Layout: Similar to Owner but limited features
+
+[Page Header]
+   - Heading: "Manager Dashboard"
+   - Hotel Name: "Druk Heritage Hotel"
+   - Today's Date: March 12, 2026
+
+[Quick Stats - 4 cards]
+
+Card 1: Available Rooms
+   - Icon: Bed (green)
+   - Number: 6/24 (large)
+   - Label: "Rooms Available"
+   - Action: "Manage Rooms" (link)
+
+Card 2: Today's Bookings
+   - Icon: Calendar (blue)
+   - Number: 5 (large)
+   - Label: "Bookings Today"
+   - Action: "View All" (link)
+
+Card 3: Maintenance Status
+   - Icon: Tool (orange)
+   - Number: 2 (large)
+   - Label: "Rooms in Maintenance"
+   - Action: "Update Status" (link)
+
+Card 4: Occupancy Rate
+   - Icon: Percentage (green)
+   - Number: 75% (large)
+   - Label: "Current Occupancy"
+   - Visual: Circular progress
+
+[Room Status Overview - Grid]
+   
+   Title: "Room Inventory Status"
+   
+   View Toggle: Grid View | List View (button group)
+   
+   [Grid View - 6 columns, responsive]
+   
+   Each Room Card (150px x 150px):
+   - Room Number: 101 (top, large)
+   - Room Type: Deluxe (below number)
+   - Status Badge: Available (green) / Occupied (red) / Maintenance (amber) / Cleaning (blue)
+   - Price: Nu. 3,000/night (bottom)
+   - Icon: Bed (center, large, faded)
+   - Click: Opens room details modal
+   
+   Color Coding:
+   - Available: Green border, white background
+   - Occupied: Red border, pink light background
+   - Maintenance: Amber border, yellow light background
+   - Cleaning: Blue border, blue light background
+
+[Recent Bookings Table - Compact]
+   - Title: "Recent Bookings"
+   - View All (link, right)
+   
+   Columns:
+   - Booking ID (BK-1234)
+   - Room (101)
+   - Guest (Tashi Dorji)
+   - Check-in (Mar 13)
+   - Status (badge)
+   
+   Show: Last 10 bookings
+
+[Quick Actions - Floating or top right]
+   - Add Room (button, icon: plus)
+   - Update Pricing (button, icon: edit)
+   - Mark Maintenance (button, icon: tool)
+
+--------------------------------------------------
+7.2 ROOM MANAGEMENT LIST PAGE
+--------------------------------------------------
+
+URL: /manager/rooms
+Layout: List/Grid toggle view
+
+[Page Header]
+   - Heading: "Room Management"
+   - Breadcrumb: Home > Rooms
+   - Add Room Button (primary, right, icon: plus)
+
+[Stats Bar - 4 small cards in row]
+   - Total Rooms: 24
+   - Available: 6 (green)
+   - Occupied: 16 (red)
+   - Maintenance: 2 (amber)
+
+[Filter and View Controls]
+   - Search: Room number or type (text input with icon)
+   - Filter by Status: All | Available | Occupied | Maintenance (button group)
+   - Filter by Type: All | Standard | Deluxe | Suite | Family (dropdown)
+   - Sort by: Room Number | Price | Type (dropdown)
+   - View Toggle: Grid View | Table View (icons)
+
+[GRID VIEW - Default]
+
+Grid Layout: 4 columns, responsive
+
+Each Room Card (280px width):
+   
+   [Card Header - Image placeholder or icon]
+   - Room image placeholder (200px height, gray background)
+   - Or large bed icon if no image
+   
+   [Card Body]
+   - Room Number: 101 (20px, bold)
+   - Room Type: Deluxe Double (14px, gray)
+   - Capacity: 2 Adults (icon: users)
+   - Amenities Icons: WiFi, TV, AC (small icons row)
+   
+   [Pricing Section]
+   - Base Price: Nu. 2,700 (strikethrough if commission shown)
+   - Final Price: Nu. 3,000/night (large, blue)
+   - Commission: +Nu. 300 (10%) (small, gray)
+   
+   [Status Badge - Top right corner]
+   - Available (green)
+   - Occupied (red)
+   - Maintenance (amber)
+   - Cleaning (blue)
+   
+   [Card Footer - Actions]
+   - Edit Button (secondary, icon: edit)
+   - Update Status (dropdown: Available, Maintenance, Cleaning)
+   - Delete Button (icon only, red, far right)
+
+[TABLE VIEW - Alternative]
+
+Table Columns:
+   - Room Number (sortable)
+   - Room Type (sortable)
+   - Capacity (2 Adults)
+   - Base Price (Nu. 2,700)
+   - Final Price (Nu. 3,000)
+   - Commission (Nu. 300 / 10%)
+   - Status (badge with dropdown)
+   - Current Guest (if occupied, link to booking)
+   - Actions (Edit, Delete icons)
+
+Table Features:
+   - Select: Checkbox for bulk actions
+   - Bulk Actions: Update status, Delete selected
+   - Pagination: 20 per page
+   - Export: Export CSV (button)
+
+Empty State (if no rooms):
+   - Illustration: Empty room icon
+   - Message: "No rooms added yet"
+   - Description: "Add your first room to start accepting bookings"
+   - Add Room Button (primary, large)
+
+--------------------------------------------------
+7.3 ADD/EDIT ROOM PAGE
+--------------------------------------------------
+
+URL: /manager/rooms/create or /manager/rooms/{id}/edit
+Layout: Centered form, max-width 800px
+
+[Page Header]
+   - Heading: "Add New Room" or "Edit Room 101"
+   - Breadcrumb: Home > Rooms > Add Room
+   - Back Button (secondary, left, icon: arrow-left)
+
+[Form Card]
+
+Section 1: Basic Information
+
+   Row 1 (2 columns):
+   - Room Number * (text input)
+     Placeholder: "101"
+     Note: "Unique identifier"
+   
+   - Room Type * (dropdown)
+     Options: Standard, Deluxe, Suite, Family, Dormitory
+     Icon: Bed
+
+   Row 2 (2 columns):
+   - Floor (number input)
+     Placeholder: "1"
+   
+   - View Type (dropdown)
+     Options: Garden View, Mountain View, City View, No View
+
+Section 2: Capacity
+
+   Row (2 columns):
+   - Maximum Adults * (number input)
+     Default: 2
+     Min: 1, Max: 10
+     Icon: Users
+   
+   - Maximum Children (number input)
+     Default: 0
+     Min: 0, Max: 5
+
+Section 3: Pricing (Important border highlight)
+
+   Info Box (blue background, light):
+   "Base Price is what your hotel earns. The system automatically adds 10% commission for the final guest price."
+
+   Row (3 columns):
+   - Base Price * (number input)
+     Label: "Hotel Earning (Per Night)"
+     Placeholder: "2700"
+     Prefix: "Nu."
+     
+   - Commission (read-only, calculated)
+     Label: "Platform Fee (10%)"
+     Value: "Nu. 300" (gray text)
+     Auto-calculates on base price change
+   
+   - Final Price (read-only, calculated)
+     Label: "Guest Pays (Per Night)"
+     Value: "Nu. 3,000" (bold, blue text)
+     Auto-calculates: base + commission
+
+   Pricing Preview Card:
+   - Visual breakdown:
+     * Your Earning: Nu. 2,700 (90%) - Green bar
+     * Platform Fee: Nu. 300 (10%) - Amber bar
+     * Total to Guest: Nu. 3,000 - Total bar
+
+Section 4: Amenities (Optional)
+
+   Checkbox Grid (3 columns):
+   - WiFi (icon: wifi)
+   - Air Conditioning (icon: wind)
+   - Television (icon: tv)
+   - Mini Bar (icon: glass)
+   - Room Service (icon: concierge)
+   - Telephone (icon: phone)
+   - Safe (icon: lock)
+   - Balcony (icon: window)
+   - Bathtub (icon: bath)
+
+Section 5: Room Description (Optional)
+
+   - Description (textarea, 4 rows)
+     Placeholder: "Describe the room features, size, decor, etc."
+     Character count: 0/500
+
+Section 6: Initial Status
+
+   - Room Status * (radio buttons)
+     Options:
+     * Available (default, green)
+     * Maintenance (amber)
+     Note: "Status can be updated later from room list"
+
+Section 7: Room Images (Phase 2 feature - grayed out)
+
+   - Upload Room Images (disabled)
+   - Coming Soon badge
+   - Note: "Image upload will be available in next version"
+
+[Form Actions - Bottom, sticky]
+   
+   - Cancel Button (secondary, left)
+     Returns to room list
+   
+   - Save as Draft (secondary, if applicable)
+   
+   - Save Room (primary, right, large)
+     If edit mode: "Update Room"
+
+Validation:
+   - Required fields marked with red asterisk
+   - Real-time validation on blur
+   - Error messages below fields (red text)
+   - Summary of errors at top if submit fails
+
+Success:
+   - Toast notification: "Room added successfully"
+   - Redirect to room list
+   - Or "Save and Add Another" option
+
+[Bulk Room Creation Option - Accessible from room list]
+
+Modal: "Add Multiple Rooms"
+   - Title: "Bulk Room Creation"
+   - Description: "Create multiple rooms with sequential numbers"
+   
+   Form:
+   - Starting Room Number (text input): "101"
+   - Ending Room Number (text input): "110"
+   - Room Type (dropdown): Deluxe
+   - Floor (number): 1
+   - Capacity (Adults): 2
+   - Base Price (number): Nu. 2,700
+   - Amenities (checkboxes): WiFi, AC, TV
+   - Initial Status: Available
+   
+   Preview:
+   "This will create 10 rooms from 101 to 110 with the same configuration."
+   
+   - Cancel Button
+   - Create Rooms Button (primary)
+   
+   Success:
+   - Progress bar showing creation
+   - "10 rooms created successfully"
+
+
+==============================================================================
+8. RECEPTIONIST DASHBOARD AND PAGES
+==============================================================================
+
+--------------------------------------------------
+8.1 RECEPTIONIST DASHBOARD
+--------------------------------------------------
+
+URL: /receptionist/dashboard
+Layout: Task-focused, simplified
+
+[Page Header]
+   - Heading: "Receptionist Dashboard"
+   - Hotel Name: "Druk Heritage Hotel"
+   - Current Time: 09:45 AM | Date: March 12, 2026 (large, prominent)
+
+[Priority Actions Bar - Top, highlighted]
+   
+   Large Action Cards (4 cards, equal width):
+   
+   Card 1: Create Booking
+   - Icon: Plus-circle (blue, large 48px)
+   - Label: "New Booking"
+   - Description: "Create guest reservation"
+   - Button: "Create" (primary, full width)
+   - Keyboard Shortcut: Ctrl+N (shown small)
+   
+   Card 2: Check-in Guest
+   - Icon: Login arrow (green, large)
+   - Label: "Check-in"
+   - Badge: "3 pending" (amber)
+   - Button: "Process Check-in" (green, full width)
+   
+   Card 3: Check-out Guest
+   - Icon: Logout arrow (red, large)
+   - Label: "Check-out"
+   - Badge: "2 today"
+   - Button: "Process Check-out" (blue, full width)
+   
+   Card 4: Search Guest
+   - Icon: Search (gray, large)
+   - Label: "Find Guest"
+   - Description: "Search existing records"
+   - Search input (inline)
+
+[Today's Schedule - 2 columns]
+
+Left Column: Today's Check-ins
+   - Title: "Scheduled Check-ins Today"
+   - Count Badge: 3 guests
+   
+   List Items (each):
+   - Time: 2:00 PM (badge, blue)
+   - Guest Name: Tashi Dorji (large, bold)
+   - Room: 101 - Deluxe
+   - Nights: 3 nights
+   - Booking ID: BK-1234 (small, gray)
+   - Guest Phone: +975-17-123456 (small, with phone icon)
+   - Special Requests: "Early check-in requested" (if any, italic)
+   - Action: Check-in Now (button, green)
+   
+   Status Indicators:
+   - Not Arrived: White background
+   - Checked-in: Green light background, check icon
+   
+   Empty State:
+   - Icon: Calendar-check
+   - "No check-ins scheduled for today"
+
+Right Column: Today's Check-outs
+   - Same layout as check-ins
+   - Time: By 11:00 AM (standard checkout)
+   - Action: Process Check-out (button, blue)
+
+[Current Occupancy Status Card - Full width]
+   
+   Title: "Current Room Status"
+   
+   Visual: Progress bar or stat bar
+   - Total Rooms: 24
+   - Occupied: 18 (75%) - Red section
+   - Available: 6 (25%) - Green section
+   - Maintenance: 2 (included in total, amber marker)
+   
+   Quick Stats Row:
+   - Occupied: 18 rooms (red)
+   - Available: 6 rooms (green)
+   - Maintenance: 2 rooms (amber)
+   - Cleaning: 0 rooms (blue)
+   
+   Quick Filter Links:
+   - View Available Rooms (link)
+   - Rooms Ready to Sell (link)
+
+[Recent Activity - Recent Bookings]
+   
+   Title: "Recent Bookings"
+   Filter Tabs: All | Today | This Week
+   
+   Table (simplified):
+   - Time (2 hours ago)
+   - Booking ID (BK-1234)
+   - Guest Name (Tashi Dorji)
+   - Room (101)
+   - Dates (Mar 13-16)
+   - Status (Confirmed badge)
+   - Action (View button)
+   
+   Show: Last 10 bookings
+   View All Button (bottom)
+
+[Quick Stats Sidebar or Bottom]
+   
+   Small Cards:
+   - Today's Arrivals: 3 (blue)
+   - Today's Departures: 2 (red)
+   - Walk-ins Today: 1 (amber)
+   - Total Guests in House: 28 (green)
+
+--------------------------------------------------
+8.2 CREATE BOOKING FORM
+--------------------------------------------------
+
+URL: /receptionist/bookings/create
+Layout: Multi-step form or single page with sections
+
+[Page Header]
+   - Heading: "Create New Booking"
+   - Breadcrumb: Home > Create Booking
+   - Step Indicator: 1 of 4 steps (progress bar)
+
+[Step 1: Guest Information]
+
+Title: "Guest Details"
+
+   Guest Search First (prominent):
+   - Search Existing Guest (text input, large)
+     Placeholder: "Search by name, email, or phone"
+     Icon: Search
+     Search Button (primary)
+   
+   Search Results Dropdown (if typing):
+   - Guest Name
+   - Email | Phone
+   - Last Stay: 2 months ago
+   - Select Button
+   
+   Divider: "OR"
+   
+   New Guest Form:
+   
+   Row 1 (2 columns):
+   - Full Name * (text input)
+     Placeholder: "Tashi Dorji"
+   
+   - Phone Number * (tel input)
+     Placeholder: "+975-17-XXXXXX"
+   
+   Row 2 (2 columns):
+   - Email Address (email input, optional)
+     Placeholder: "guest@email.com"
+   
+   - ID Type (dropdown)
+     Options: Citizenship ID, Passport, Other
+   
+   Row 3 (2 columns):
+   - ID Number (text input)
+     Placeholder: "ID/Passport number"
+   
+   - Nationality (dropdown)
+     Options: Bhutanese, Indian, Other countries...
+   
+   Row 4 (full width):
+   - Address (textarea, 2 rows)
+     Placeholder: "Current address"
+   
+   Special Requests/Notes (textarea, 2 rows)
+   Placeholder: "Allergies, preferences, special requirements..."
+   
+   [Navigation]
+   - Next: Room Selection (button, primary, right)
+
+[Step 2: Room Selection]
+
+Title: "Select Room and Dates"
+
+   Date Selection (prominent):
+   Row (3 columns):
+   - Check-in Date * (date picker, large)
+     Default: Today
+     Icon: Calendar
+   
+   - Check-out Date * (date picker, large)
+     Icon: Calendar
+     Min: Check-in + 1 day
+   
+   - Nights (read-only, calculated)
+     Display: "3 Nights" (large, blue badge)
+   
+   Check Availability Button (primary, full width)
+   "Search Available Rooms"
+
+   Available Rooms Display (after search):
+   
+   Filter Bar:
+   - Room Type: All types (dropdown)
+   - Price Range: Nu. 0 - 10,000 (range slider)
+   - Sort by: Price Low to High (dropdown)
+   
+   Room Cards (list):
+   
+   Each Card (horizontal layout):
+   
+   [Left - Room Info]
+   - Room Number: 101 (large, bold)
+   - Room Type: Deluxe Double
+   - Capacity: 2 Adults (icon: users)
+   - Amenities: WiFi, AC, TV (icons)
+   - View: Garden View
+   
+   [Center - Pricing]
+   - Price per Night: Nu. 3,000 (large)
+   - Total for 3 nights: Nu. 9,000 (blue, bold)
+   - Breakdown: Base Nu. 8,100 + Commission Nu. 900
+   
+   [Right - Action]
+   - Select Room (button, primary)
+   - Selected: Green checkmark + "Selected"
+   
+   Number of Rooms:
+   - Quantity selector: - 1 + (if multiple rooms needed)
+   
+   No Rooms Available:
+   - Message: "No rooms available for selected dates"
+   - Icon: Calendar-x
+   - Suggestion: "Try different dates or room types"
+   
+   [Navigation]
+   - Back: Guest Info (button, secondary, left)
+   - Next: Review (button, primary, right, disabled until room selected)
+
+[Step 3: Additional Details]
+
+Title: "Booking Details"
+
+   Guest Count:
+   Row (2 columns):
+   - Number of Adults * (number input)
+     Default: 2
+     Icon: Users
+   
+   - Number of Children (number input)
+     Default: 0
+     Icon: User-plus
+   
+   Validation: Check against room capacity
+   
+   Payment Information:
+   - Payment Method * (radio buttons, large)
+     
+     Option 1: Pay at Hotel (default)
+     Icon: Cash register
+     Description: "Guest will pay at check-in/check-out"
+     
+     Option 2: Pay Online
+     Icon: Credit card
+     Description: "Payment collected in advance"
+     Badge: "Coming Soon" (grayed out if not available)
+   
+   Payment Status:
+   - Status * (dropdown)
+     Options: Pending, Paid (if online payment)
+   
+   Source of Booking:
+   - Booking Source (dropdown)
+     Options: Walk-in, Phone, Email, Website, Other
+   
+   Special Requests:
+   - Additional Notes (textarea, 3 rows)
+     Placeholder: "Any special arrangements, early check-in, late checkout..."
+   
+   [Navigation]
+   - Back: Room Selection (button, secondary, left)
+   - Next: Review & Confirm (button, primary, right)
+
+[Step 4: Review and Confirm]
+
+Title: "Review Booking Details"
+
+   Summary Card (prominent, large):
+   
+   Section 1: Guest Information
+   - Name: Tashi Dorji
+   - Phone: +975-17-123456
+   - Email: tashi@email.com
+   - ID: Passport - P1234567
+   - Edit (link, right)
+   
+   Divider Line
+   
+   Section 2: Booking Details
+   - Check-in: March 13, 2026 (2:00 PM)
+   - Check-out: March 16, 2026 (11:00 AM)
+   - Duration: 3 Nights
+   - Guests: 2 Adults, 0 Children
+   - Edit (link, right)
+   
+   Divider Line
+   
+   Section 3: Room Details
+   - Room: 101 - Deluxe Double
+   - View: Garden View
+   - Amenities: WiFi, AC, TV
+   - Edit (link, right)
+   
+   Divider Line
+   
+   Section 4: Pricing Breakdown (highlight box)
+   - Price per Night: Nu. 3,000
+   - Number of Nights: × 3
+   - Subtotal: Nu. 9,000
+   
+   Breakdown (smaller):
+   - Hotel Earning (Base): Nu. 8,100 (90%)
+   - Platform Commission: Nu. 900 (10%)
+   
+   - Total Amount: Nu. 9,000 (large, blue, bold)
+   
+   Divider Line
+   
+   Section 5: Payment
+   - Payment Method: Pay at Hotel
+   - Payment Status: Pending
+   - Edit (link, right)
+   
+   Special Requests (if any):
+   - Notes: Early check-in requested, please prepare room by 12 PM
+   
+   Terms Checkbox:
+   - "Guest has been informed of hotel policies and checkout time"
+   
+   [Final Actions - Large buttons]
+   
+   - Back to Edit (button, secondary, left)
+   
+   - Confirm Booking (button, primary, large, green, right)
+     Icon: Check-circle
+
+Success Screen (after confirmation):
+   
+   - Success Icon: Check circle (green, large, animated)
+   - Heading: "Booking Created Successfully!"
+   - Booking ID: BK-1234 (very large, bold, blue)
+   
+   Quick Actions:
+   - Print Confirmation (button, secondary)
+   - Send Email (button, secondary)
+   - View Booking Details (button, primary)
+   - Create Another Booking (button, secondary)
+   
+   Booking Summary (card):
+   - Guest: Tashi Dorji
+   - Room: 101
+   - Check-in: March 13, 2026
+   - Total: Nu. 9,000
+
+--------------------------------------------------
+8.3 GUEST MANAGEMENT PAGE
+--------------------------------------------------
+
+URL: /receptionist/guests
+Layout: List view with search
+
+[Page Header]
+   - Heading: "Guest Management"
+   - Breadcrumb: Home > Guests
+   - Add Guest Button (secondary, right)
+
+[Stats Bar - 3 cards]
+   - Total Guests: 142
+   - Currently Staying: 28
+   - Repeat Guests: 45 (32%)
+
+[Search and Filter Bar]
+   
+   - Search (text input, large)
+     Placeholder: "Search by name, email, phone, or ID"
+     Icon: Search button (primary, attached)
+   
+   Filters:
+   - Filter by Status: All | Current Guests | Past Guests (button group)
+   - Sort by: Recent First | Name A-Z (dropdown)
+
+[Guest List - Cards or Table]
+
+Card View (default):
+
+Each Guest Card:
+   
+   [Header Row]
+   - Avatar: Circle with initials (48px)
+   - Guest Name: Tashi Dorji (large, bold)
+   - Guest ID: G-1234 (small, gray)
+   - Status Badge: Current Guest (green) | Past Guest (gray)
+   
+   [Body - 2 columns]
+   
+   Left Column:
+   - Phone: +975-17-123456 (phone icon)
+   - Email: tashi@email.com (envelope icon)
+   - ID: Passport P1234567
+   - Nationality: Bhutanese (flag icon if available)
+   
+   Right Column:
+   - Total Stays: 3 times
+   - Last Stay: March 10, 2026
+   - Current Room: 101 (if staying, with bed icon)
+   - Total Spent: Nu. 18,000 (optional)
+   
+   [Footer - Actions]
+   - View Profile (button, secondary)
+   - Booking History (button, secondary)
+   - Create Booking (button, primary)
+
+Table View (alternative):
+
+Columns:
+   - Avatar + Name
+   - Phone
+   - Email
+   - Total Stays
+   - Last Stay
+   - Status
+   - Actions (View, Book, dots menu)
+
+Pagination: 20 guests per page
+
+Empty State:
+   - Illustration: Users icon
+   - Message: "No guests found"
+   - Description: "Guests will appear here after bookings are created"
+
+--------------------------------------------------
+8.4 CHECK-IN / CHECK-OUT PAGES
+--------------------------------------------------
+
+CHECK-IN PAGE
+URL: /receptionist/checkin
+
+[Page Header]
+   - Heading: "Guest Check-in"
+   - Breadcrumb: Home > Check-in
+
+[Search Section - Prominent]
+   
+   - Search Booking (text input, very large)
+     Placeholder: "Enter booking ID, guest name, or phone"
+     Icon: Search (large button attached, primary)
+   
+   Or
+   
+   - Scan Booking QR Code (button, secondary)
+     Icon: QR code
+
+[Search Results / Booking Details]
+
+If Found:
+   
+   Booking Card (large, prominent):
+   
+   [Header]
+   - Booking ID: BK-1234 (large, blue)
+   - Status Badge: Confirmed (green)
+   - Creation Date: Created on March 10, 2026
+   
+   [Guest Information Section]
+   Icon: User
+   - Guest Name: Tashi Dorji (large)
+   - Phone: +975-17-123456 (clickable, call icon)
+   - Email: tashi@email.com (clickable, email icon)
+   - ID: Passport P1234567
+   - Nationality: Bhutanese
+   
+   [Booking Details Section]
+   Icon: Calendar
+   - Check-in Date: March 13, 2026 (Today, highlighted)
+   - Check-in Time: 2:00 PM
+   - Check-out Date: March 16, 2026
+   - Nights: 3 nights
+   - Guests: 2 Adults
+   
+   [Room Details Section]
+   Icon: Bed
+   - Room Number: 101 (large, bold)
+   - Room Type: Deluxe Double
+   - Floor: 1st Floor
+   - View: Garden View
+   
+   [Payment Information Section]
+   Icon: Currency
+   - Total Amount: Nu. 9,000 (large)
+   - Payment Method: Pay at Hotel
+   - Payment Status: Pending (amber badge)
+   - Action: Mark as Paid (checkbox or button)
+   
+   [Special Requests Section] (if any)
+   Icon: Bell
+   - Notes: Early check-in requested, prepared by 12 PM
+   
+   [Check-in Form]
+   
+   Verification Steps:
+   
+   1. Verify Guest Identity
+      - Checkbox: "Guest ID verified"
+      - Checkbox: "Guest information confirmed"
+   
+   2. Room Preparation
+      - Room Status (dropdown): Select current room status
+        Options: Ready, Needs Cleaning, Maintenance Required
+      - If not ready: Alert message with options
+   
+   3. Collect Payment (if applicable)
+      - If "Pay at Hotel":
+        Checkbox: "Payment collected - Nu. 9,000"
+        Payment Method Used: Cash / Card (radio)
+        Receipt Number: (optional text input)
+   
+   4. Hotel Policies
+      - Checkbox: "Guest informed of checkout time (11:00 AM)"
+      - Checkbox: "Hotel rules and amenities explained"
+   
+   5. Key Assignment
+      - Key Number / Card Number: (text input)
+      - Number of Keys: (number input, default 2)
+   
+   Notes for Housekeeping:
+   - Additional Notes (textarea)
+     Placeholder: "Any special instructions or observations"
+   
+   [Action Buttons - Large, Bottom]
+   
+   - Cancel (button, secondary, left)
+   
+   - Complete Check-in (button, primary, large, green, right)
+     Icon: Check-circle
+   
+   Confirmation Modal:
+   - "Confirm check-in for Tashi Dorji to Room 101?"
+   - Current Time: 2:15 PM
+   - Cancel | Confirm Check-in
+
+Success:
+   - Success icon (green, animated)
+   - "Guest checked in successfully!"
+   - Check-in Time: 2:15 PM
+   - Room: 101
+   - Actions:
+     * Print Welcome Letter
+     * Send Welcome Email
+     * Back to Dashboard
+     * Check-in Another Guest
+
+If Not Found:
+   - Message: "No booking found"
+   - Create Walk-in Booking (button, primary)
+
+---
+
+CHECK-OUT PAGE
+URL: /receptionist/checkout
+
+Layout: Similar to check-in but with different fields
+
+[Page Header]
+   - Heading: "Guest Check-out"
+   - Breadcrumb: Home > Check-out
+
+[Search Section]
+   - Search by Room Number, Guest Name, or Booking ID
+   - Quick Room Select: Dropdown of currently occupied rooms
+
+[Booking Details Display]
+   Similar to check-in, shows:
+   - Guest info
+   - Booking details
+   - Room details
+   - Payment information
+
+[Check-out Form]
+
+   1. Room Inspection
+      - Room Condition (dropdown):
+        Options: Good, Minor Damage, Major Damage, Needs Cleaning
+      - If damage: Damage Description (textarea)
+      - Photos (file upload, optional)
+   
+   2. Key Return
+      - Checkbox: "All keys returned"
+      - Number of Keys: (number input)
+   
+   3. Mini Bar / Additional Services
+      - Checkbox: "Mini bar consumed"
+      - Additional Charges: Nu. (number input)
+      - Description: (text input)
+   
+   4. Guest Satisfaction
+      - Quick Feedback (optional):
+        Star Rating: 1-5 stars (clickable)
+        Comment: (textarea)
+   
+   5. Final Payment
+      If unpaid:
+      - Outstanding Amount: Nu. 9,000 (large, red)
+      - Payment Method: Cash / Card (radio)
+      - Amount Received: (number input)
+      - Change to Return: (calculated, display)
+      - Receipt Number: (text input)
+      - Checkbox: "Payment collected and verified"
+      
+      If paid:
+      - Paid Amount: Nu. 9,000 (green check)
+      - Payment Date: March 13, 2026
+   
+   6. Check-out Confirmation
+      - Actual Check-out Time: (auto-filled, current time)
+      - Late Checkout? (checkbox)
+        If checked: Late Fee: Nu. (number input)
+   
+   Notes:
+   - Checkout Notes (textarea)
+     Placeholder: "Any feedback or issues to note"
+
+[Action Buttons]
+   
+   - Cancel (button, secondary, left)
+   
+   - Complete Check-out (button, primary, large, blue, right)
+     Icon: Logout arrow
+
+Confirmation Modal:
+   - "Complete check-out for Guest Name from Room 101?"
+   - Final Amount: Nu. 9,000
+   - Payment Status: Paid / Pending
+   - Cancel | Confirm Check-out
+
+Success:
+   - Success icon
+   - "Guest checked out successfully!"
+   - Check-out Time: 10:45 AM
+   - Final Amount: Nu. 9,000
+   - Actions:
+     * Print Receipt
+     * Send Receipt Email
+     * Back to Dashboard
+     * Process Another Checkout
+
+After Checkout:
+   - Room Status automatically updated to "Cleaning"
+   - Booking Status updated to "CHECKED_OUT"
+   - Guest record remains in system
+
+
+==============================================================================
+9. SHARED PAGES
+==============================================================================
+
+--------------------------------------------------
+9.1 BOOKING LIST VIEW (ALL ROLES)
+--------------------------------------------------
+
+URL: /bookings (role-specific prefix)
+Layout: Full page with filters
+
+[Page Header]
+   - Heading: "All Bookings"
+   - Breadcrumb: Home > Bookings
+   - Create Booking Button (if Owner/Manager/Receptionist, primary, right)
+
+[Stats Bar - 5 small cards]
+   - Total Bookings: 124
+   - Confirmed: 45 (blue)
+   - Checked-in: 28 (green)
+   - Checked-out: 48 (gray)
+   - Cancelled: 3 (red)
+
+[Advanced Filters Panel - Collapsible]
+
+   Search:
+   - Search Box (text input, large)
+     Placeholder: "Search by booking ID, guest name, room..."
+   
+   Filter Options (grid layout):
+   
+   Row 1:
+   - Date Range: From | To (date pickers)
+   - Quick Dates: Today | This Week | This Month | Custom
+   
+   Row 2:
+   - Status (multi-select dropdown):
+     * All Statuses
+     * Confirmed
+     * Checked-in
+     * Checked-out
+     * Cancelled
+   
+   - Room Type (dropdown):
+     * All Types
+     * Standard
+     * Deluxe
+     * Suite
+     * Family
+   
+   - Payment Status (dropdown):
+     * All
+     * Paid
+     * Pending
+   
+   Row 3:
+   - Sort by (dropdown):
+     * Newest First
+     * Oldest First
+     * Check-in Date
+     * Check-out Date
+     * Amount High-Low
+   
+   Action Buttons:
+   - Apply Filters (primary)
+   - Reset (secondary)
+   - Export List (secondary, icon: download)
+
+[Bookings Table]
+
+Table Columns (adjust based on screen size):
+   
+   - Booking ID (BK-1234, blue link, bold)
+   - Guest Name (Tashi Dorji, with avatar)
+   - Room (101 - Deluxe)
+   - Check-in (Mar 13, 2026, 2:00 PM)
+   - Check-out (Mar 16, 2026, 11:00 AM)
+   - Nights (3)
+   - Guests (2 Adults)
+   - Total Amount (Nu. 9,000)
+   - Payment (Paid-green / Pending-amber badge)
+   - Status (Badge: Confirmed-blue / Checked-in-green / Checked-out-gray / Cancelled-red)
+   - Actions (dropdown menu)
+
+Actions Dropdown Menu:
+   - View Details (eye icon)
+   - Edit Booking (if not checked-out, edit icon)
+   - Check-in (if confirmed, login icon)
+   - Check-out (if checked-in, logout icon)
+   - Cancel Booking (if applicable, X icon)
+   - Print Voucher (printer icon)
+
+Row Hover: Light background highlight
+Row Click: Opens booking details
+
+Table Features:
+   - Sortable columns (click header)
+   - Select: Checkbox for bulk actions
+   - Bulk Actions: Export selected, Send emails
+   - Pagination: 25 per page
+   - Page numbers: 1 2 3 ... 10 Next
+
+[Calendar View Toggle - Alternative View]
+
+   Button: Switch to Calendar View (icon: calendar)
+   
+   Calendar shows:
+   - Month view
+   - Each date with booking count
+   - Color coding by status
+   - Click date: Shows bookings for that day
+
+Empty State:
+   - Illustration: Calendar icon
+   - Message: "No bookings found"
+   - Description: "Try adjusting your filters or create a new booking"
+   - Create Booking Button
+
+--------------------------------------------------
+9.2 BOOKING DETAILS PAGE
+--------------------------------------------------
+
+URL: /bookings/BK-1234
+Layout: Full page, sidebar layout
+
+[Page Header]
+   - Booking ID: BK-1234 (large, bold)
+   - Status Badge: Checked-in (large, green)
+   - Breadcrumb: Home > Bookings > BK-1234
+   - Actions Dropdown (right):
+     * Edit Booking
+     * Print Voucher
+     * Send Email
+     * Cancel Booking
+     * Delete (if canceled)
+
+[Main Content - Left Side, 70%]
+
+Card 1: Guest Information
+   Icon: User (in header)
+   
+   [Profile Row]
+   - Avatar (large, 80px)
+   - Guest Name: Tashi Dorji (large, 24px)
+   - Guest ID: G-1234 (link to guest profile)
+   
+   [Details Grid - 2 columns]
+   - Phone: +975-17-123456 (clickable, phone icon)
+   - Email: tashi@email.com (clickable, email icon)
+   - ID Type: Passport
+   - ID Number: P1234567
+   - Nationality: Bhutanese
+   - Address: Motithang, Thimphu
+   
+   - Previous Stays: 2 times (link to history)
+   - Last Stay: 6 months ago
+
+Card 2: Booking Details
+   Icon: Calendar
+   
+   [Details Grid - 2 columns]
+   - Booking Date: March 10, 2026, 10:30 AM
+   - Booking Source: Walk-in
+   - Created By: Sonam Lhamo (Receptionist)
+   
+   - Check-in Date: March 13, 2026
+   - Check-in Time: 2:00 PM (standard)
+   - Actual Check-in: March 13, 2026, 2:15 PM (if checked-in, green)
+   
+   - Check-out Date: March 16, 2026
+   - Check-out Time: 11:00 AM (standard)
+   - Actual Check-out: (pending / shows time when done)
+   
+   - Duration: 3 Nights
+   - Number of Guests: 2 Adults, 0 Children
+
+Card 3: Room Details
+   Icon: Bed
+   
+   [Room Info]
+   - Room Number: 101 (very large, blue, bold)
+   - Room Type: Deluxe Double
+   - Floor: 1st Floor
+   - View: Garden View
+   - Capacity: 2 Adults
+   
+   - Amenities: WiFi, AC, TV, Mini Bar (icons)
+   
+   - Current Status: Occupied (red badge) / Available (green)
+
+Card 4: Payment Information
+   Icon: Currency
+   
+   [Pricing Breakdown Table]
+   - Room Rate: Nu. 3,000 / night
+   - Number of Nights: × 3
+   - Subtotal: Nu. 9,000
+   
+   Breakdown:
+   - Base Amount (Hotel): Nu. 8,100 (90%)
+   - Commission (Platform): Nu. 900 (10%)
+   
+   Divider
+   
+   - Total Amount: Nu. 9,000 (large, blue, bold)
+   
+   [Payment Details]
+   - Payment Method: Pay at Hotel
+   - Payment Status: Paid (green badge) / Pending (amber badge)
+   - Paid On: March 13, 2026, 2:15 PM (if paid)
+   - Paid By: Cash / Card
+   - Receipt Number: RCP-1234
+   
+   If Pending:
+   - Mark as Paid Button (primary)
+
+Card 5: Special Requests & Notes
+   Icon: Note
+   
+   - Guest Requests: Early check-in requested, non-smoking room
+   - Staff Notes: Room prepared by 12 PM, extra towels provided
+   - Housekeeping Notes: (if any)
+
+Card 6: Booking History Timeline
+   Icon: Clock
+   
+   Timeline (vertical):
+   - March 10, 2026, 10:30 AM: Booking created by Sonam Lhamo
+   - March 10, 2026, 10:35 AM: Confirmation email sent
+   - March 13, 2026, 8:00 AM: Check-in reminder email sent
+   - March 13, 2026, 2:15 PM: Guest checked in by Karma Wangchuk
+   - March 13, 2026, 2:20 PM: Payment collected
+   
+   (If modifications):
+   - March 12, 2026, 3:00 PM: Booking modified (dates changed)
+   - Modified By: Sonam Lhamo
+
+[Sidebar - Right Side, 30%]
+
+Quick Actions Card:
+   
+   Status-based actions:
+   
+   If Confirmed:
+   - Check-in Guest (button, primary, large, green)
+   - Edit Booking (button, secondary)
+   - Cancel Booking (button, red outline)
+   - Send Reminder Email (button, secondary)
+   
+   If Checked-in:
+   - Check-out Guest (button, primary, large, blue)
+   - Add Charges (button, secondary)
+   - Send Receipt (button, secondary)
+   
+   If Checked-out:
+   - View Receipt (button, secondary)
+   - Create New Booking (button, primary)
+
+Status Timeline Card:
+   Visual progress:
+   - Confirmed → Checked-in → Checked-out
+   - Filled circles for completed steps
+   - Current step highlighted
+
+Guest Quick Info Card:
+   - Photo / Avatar
+   - Name
+   - Phone (call button)
+   - Email (email button)
+   - View Full Profile (link)
+
+Related Bookings Card:
+   "Previous Stays"
+   - List of 2-3 previous bookings
+   - Booking ID, Date, Room
+   - View All (link)
+
+[Bottom Action Bar - Sticky]
+   - Back to Bookings (button, secondary, left)
+   - Print Voucher (button, secondary)
+   - Send Email (button, secondary)
+   - Delete Booking (button, red outline, far right, if applicable)
+
+--------------------------------------------------
+9.3 GUEST PROFILE PAGE
+--------------------------------------------------
+
+URL: /guests/G-1234
+Layout: Profile layout with tabs
+
+[Page Header]
+   - Guest Name: Tashi Dorji (large, 28px)
+   - Guest ID: G-1234
+   - Breadcrumb: Home > Guests > Tashi Dorji
+   - Edit Profile Button (secondary, right)
+
+[Profile Header Section]
+
+   [Left Side]
+   - Avatar: Large circle (120px) with photo or initials
+   - Upload Photo Button (if owner/manager)
+   
+   [Center]
+   - Guest Name: Tashi Dorji (very large)
+   - Guest Type Badge: Regular Guest / VIP / First Time
+   - Membership Since: January 2024
+   
+   [Stats Row]
+   - Total Stays: 5 times
+   - Total Spent: Nu. 45,000
+   - Average Spend: Nu. 9,000
+   - Loyalty Points: 450 (Phase 2 feature, grayed)
+   
+   [Right Side]
+   - Status: Currently Staying (green) / Not Staying (gray)
+   - If staying: Room 101, Check-out March 16
+   - Quick Actions:
+     * Create Booking (button, primary)
+     * Send Email (button, secondary)
+
+[Tabs Navigation]
+   - Tab 1: Personal Information (active)
+   - Tab 2: Booking History
+   - Tab 3: Preferences (Phase 2, grayed)
+   - Tab 4: Notes & Comments
+
+[Tab 1: Personal Information]
+
+Card: Contact Information
+   Icon: Address book
+   
+   Grid (2 columns):
+   - Full Name: Tashi Dorji
+   - Phone: +975-17-123456 (call icon)
+   - Email: tashi@email.com (email icon)
+   - Alternate Phone: (if available)
+   
+   - Nationality: Bhutanese
+   - ID Type: Passport
+   - ID Number: P1234567
+   - ID Expiry: December 2028
+   
+   - Address: Motithang, Thimphu, Bhutan
+   - Postal Code: 11001
+   
+   - Date of Birth: January 15, 1985 (Age: 41)
+   - Gender: Male
+   
+   Edit Button (if has permission)
+
+Card: Professional Information (optional)
+   - Company: (if business traveler)
+   - Designation: 
+   - Company Address:
+   - GST Number: (if applicable)
+
+[Tab 2: Booking History]
+
+Filter Bar:
+   - Date Range: All Time | Last Year | Last 6 Months
+   - Status: All | Completed | Cancelled
+   - Sort: Recent First
+
+Statistics Cards Row:
+   - Total Bookings: 5
+   - Completed: 4
+   - Cancelled: 1
+   - No-shows: 0
+
+Bookings Timeline (list):
+
+Each Booking Card:
+   - Booking ID: BK-1234 (link)
+   - Status Badge: Checked-out (gray)
+   - Dates: March 13-16, 2026 (3 nights)
+   - Room: 101 - Deluxe
+   - Amount: Nu. 9,000
+   - Payment: Paid (green)
+   - View Details (link)
+   
+   Timeline indicator (left side, vertical line connecting bookings)
+
+Empty State:
+   - "No booking history available"
+
+[Tab 3: Preferences] (Phase 2 feature, show placeholder)
+
+   - Room Preferences: (not set)
+   - Dietary Requirements: (not set)
+   - Special Needs: (not set)
+   - Communication Preferences: (not set)
+   
+   Note: "This feature will be available in next version"
+
+[Tab 4: Notes & Comments]
+
+Internal Staff Notes (only for staff):
+   - Add Note (textarea with Save button)
+   
+   Notes History:
+   - Date: March 13, 2026, 2:15 PM
+   - By: Sonam Lhamo (Receptionist)
+   - Note: "Guest requested early check-in, very pleasant"
+   - Edit / Delete (icons)
+
+Guest Feedback (if provided):
+   - Stay Date: March 13-16, 2026
+   - Rating: 5 stars
+   - Comment: "Excellent service, will return"
+
+[Sidebar]
+
+Quick Stats Card:
+   - First Stay: January 2024
+   - Last Stay: March 2026
+   - Average Stay: 3 nights
+   - Preferred Room Type: Deluxe
+   - Cancellation Rate: 20% (1 of 5)
+
+Current Stay Card (if applicable):
+   - Status: Currently Staying
+   - Room: 101
+   - Check-in: March 13, 2026
+   - Check-out: March 16, 2026
+   - View Booking (link)
+
+Actions Card:
+   - Create New Booking (button, primary)
+   - Send Message (button, secondary)
+   - Export History (button, secondary)
+   - Merge Profiles (if duplicate, button)
+
+
+==============================================================================
+10. REPORTS AND ANALYTICS PAGES
+==============================================================================
+
+--------------------------------------------------
+10.1 REVENUE REPORT WITH CHARTS
+--------------------------------------------------
+
+URL: /owner/reports/revenue
+Layout: Dashboard style with filters
+
+[Already covered in Section 6.3 - Owner Pages]
+
+Additional Charts:
+
+Chart 3: Revenue by Room Type
+   - Chart Type: Pie chart or doughnut
+   - Segments:
+     * Deluxe: 45% (Nu. 110,000)
+     * Suite: 30% (Nu. 73,500)
+     * Standard: 25% (Nu. 61,500)
+   - Legend with amounts
+   - Click segment: Drills down to bookings
+
+Chart 4: Payment Method Distribution
+   - Chart Type: Bar chart horizontal
+   - Categories:
+     * Pay at Hotel: 80% (65 bookings)
+     * Pay Online: 20% (16 bookings)
+   - Shows booking count and amount
+
+Chart 5: Commission Trends
+   - Chart Type: Line chart
+   - X-axis: Months
+   - Y-axis: Commission amount
+   - Line: Commission earned
+   - Area fill: Light blue gradient
+
+--------------------------------------------------
+10.2 OCCUPANCY REPORT
+--------------------------------------------------
+
+URL: /owner/reports/occupancy
+Layout: Dashboard with visualizations
+
+[Page Header]
+   - Heading: "Occupancy Report"
+   - Breadcrumb: Home > Reports > Occupancy
+   - Date Range Filter: March 1-12, 2026
+   - Export Button (PDF, Excel)
+
+[Summary Cards - 4 cards]
+
+Card 1: Average Occupancy Rate
+   - Icon: Percentage (blue)
+   - Rate: 75% (large, 42px)
+   - Period: March 1-12, 2026
+   - Trend: +8% vs previous period (green)
+   - Visual: Circular progress (75%)
+
+Card 2: Peak Occupancy
+   - Icon: Arrow-up (green)
+   - Rate: 95% (large)
+   - Date: March 10, 2026 (Friday)
+   - Rooms: 23/24 occupied
+   - Note: "Weekend peak"
+
+Card 3: Lowest Occupancy
+   - Icon: Arrow-down (red)
+   - Rate: 50% (large)
+   - Date: March 3, 2026 (Monday)
+   - Rooms: 12/24 occupied
+   - Note: "Weekday low"
+
+Card 4: Available Room Nights
+   - Icon: Bed (amber)
+   - Total: 288 room nights (period)
+   - Occupied: 216 nights (75%)
+   - Available: 72 nights (25%)
+
+[Main Chart: Occupancy Trend]
+   - Title: "Daily Occupancy Rate - March 2026"
+   - Chart Type: Area chart or column chart
+   - X-axis: Dates (1-31)
+   - Y-axis: Occupancy percentage (0-100%)
+   - Columns/Area: Daily occupancy (blue gradient)
+   - Target Line: 80% target (red dotted line)
+   - Average Line: 75% average (green dashed line)
+   - Weekend highlight: Light background on weekends
+   - Tooltips: Date, Occupancy %, Rooms occupied/total
+   - Height: 400px
+
+[Room Type Analysis - Table with visual]
+
+Table:
+   - Room Type
+   - Total Rooms
+   - Occupied Days
+   - Occupancy Rate
+   - Visual Progress Bar
+   
+   Data:
+   - Deluxe: 10 rooms, 90 days, 75% (green bar)
+   - Suite: 4 rooms, 36 days, 75% (green bar)
+   - Standard: 10 rooms, 90 days, 75% (green bar)
+   
+   Total: 24 rooms, 216 days, 75%
+
+[Occupancy by Day of Week - Bar Chart]
+   - Title: "Occupancy Pattern by Day"
+   - Chart Type: Column chart
+   - X-axis: Days (Mon-Sun)
+   - Y-axis: Average occupancy %
+   - Columns:
+     * Monday: 60%
+     * Tuesday: 65%
+     * Wednesday: 70%
+     * Thursday: 75%
+     * Friday: 85%
+     * Saturday: 95%
+     * Sunday: 80%
+   - Insight: "Weekends have 30% higher occupancy"
+
+[Length of Stay Analysis - Doughnut Chart]
+   - Title: "Average Length of Stay"
+   - Segments:
+     * 1 night: 20%
+     * 2 nights: 30%
+     * 3 nights: 25%
+     * 4-7 nights: 20%
+     * 7+ nights: 5%
+   - Average: 2.8 nights
+
+[Occupancy Heatmap Calendar]
+   - Title: "Occupancy Heatmap - March 2026"
+   - Layout: Calendar grid (7 columns x 5 rows)
+   - Each cell:
+     * Date number
+     * Occupancy percentage
+     * Color intensity: Light (low) to Dark (high)
+     * Color scale: White (0%) → Blue (50%) → Dark Blue (100%)
+   - Legend: Color scale at bottom
+   - Hover: Shows detailed stats
+   - Click: Opens bookings for that day
+
+[Insights and Recommendations Card]
+   
+   Icon: Lightbulb
+   Title: "Key Insights"
+   
+   Auto-generated insights:
+   - "Weekends show 30% higher occupancy - consider dynamic pricing"
+   - "Average occupancy is 75% - 180 occupied room nights this period"
+   - "Peak occupancy on March 10 (95%) - only 1 room available"
+   - "Monday occupancy lowest at 60% - opportunity for promotions"
+   - "Average stay is 2.8 nights - consider packages for longer stays"
+
+[Forecast Section] (Phase 2 placeholder)
+   - Title: "Occupancy Forecast (Next 30 Days)"
+   - Chart: Dotted line chart (grayed out)
+   - Note: "Predictive analytics coming soon"
+
+
+==============================================================================
+END OF WIREFRAME SPECIFICATIONS
+==============================================================================
+
+IMPLEMENTATION NOTES FOR LUCIDCHART:
+
+1. Create master templates for common components (header, sidebar, cards, forms)
+2. Use consistent color scheme throughout all wireframes
+3. Create a component library for buttons, inputs, badges, icons
+4. Link wireframes together to show user flows
+5. Add annotations for interactions (hover states, click actions)
+6. Include responsive breakpoints notes where applicable
+7. Use layers for different states (empty state, loading, error, success)
+8. Export as PNG/PDF for documentation
+9. Share interactive prototype link for stakeholder review
+
+RECOMMENDED LUCIDCHART FEATURES TO USE:
+- Shape libraries: UI Mockup, Web Mockup
+- Import custom icons from Heroicons or Font Awesome
+- Use containers for card components
+- Text styles: Create presets for headings, body, labels
+- Color palette: Define and save color scheme
+- Linking: Connect pages to show navigation flow
+- Notes: Add interaction specifications
+- Hotspots: Define clickable areas in prototype mode
+
+WIREFRAME CREATION SEQUENCE:
+1. Start with common components (header, sidebar)
+2. Build authentication pages (login, registration)
+3. Create dashboard pages for each role
+4. Design form pages (booking, room creation)
+5. Build list/table views
+6. Design detail pages
+7. Create reports and analytics pages
+8. Add all modal dialogs
+9. Design empty states and error states
+10. Final review and consistency check
+
+Total Screens to Create: ~40-45 wireframes
+Estimated Time: 15-20 hours for complete wireframes in Lucidchart
+
+==============================================================================

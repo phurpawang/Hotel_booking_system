@@ -172,7 +172,7 @@
                     <h4 class="text-xl font-bold text-gray-800 mb-2">{{ $hotel->name }}</h4>
                     <p class="text-gray-600 mb-2">
                         <i class="fas fa-map-marker-alt text-blue-600"></i> 
-                        Bhutan
+                        {{ $hotel->dzongkhag ? $hotel->dzongkhag . ', ' : '' }}Bhutan
                     </p>
                     <p class="text-gray-700 mb-4 text-sm line-clamp-2">
                         {{ $hotel->description ?? 'A wonderful place to stay in Bhutan' }}
@@ -225,7 +225,7 @@
                     <h4 class="text-xl font-bold text-gray-800 mb-2">{{ $hotel->name }}</h4>
                     <p class="text-gray-600 mb-2">
                         <i class="fas fa-map-marker-alt text-blue-600"></i> 
-                        Bhutan
+                        {{ $hotel->dzongkhag ? $hotel->dzongkhag . ', ' : '' }}Bhutan
                     </p>
                     <p class="text-gray-700 mb-4 text-sm line-clamp-2">
                         {{ $hotel->description ?? 'Experience authentic Bhutanese hospitality' }}

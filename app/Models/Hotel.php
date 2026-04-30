@@ -16,6 +16,7 @@ class Hotel extends Model
         'hotel_name',
         'property_type',
         'address',
+        'dzongkhag',
         'dzongkhag_id',
         'phone',
         'mobile',
@@ -130,9 +131,9 @@ class Hotel extends Model
     /**
      * Get the dzongkhag (location) of the hotel
      */
-    public function dzongkhag()
+    public function dzongkhagRelation()
     {
-        return $this->belongsTo(Dzongkhag::class);
+        return $this->belongsTo(Dzongkhag::class, 'dzongkhag_id');
     }
 
     /**
